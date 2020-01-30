@@ -7,7 +7,7 @@ class MasterViewController: UITabBarController {
   override func viewDidLoad() {
     super.viewDidLoad()
     authorizeHealthKit()
-    setupHealthKid()
+    setupHealthKit()
   }
   
   override func didReceiveMemoryWarning() {
@@ -16,7 +16,6 @@ class MasterViewController: UITabBarController {
   }
   
   private func authorizeHealthKit() {
-    
     HealthKitSetupAssistant.authorizeHealthKit { (authorized, error) in
       guard authorized else {
         let baseMessage = "HealthKit Authorization Failed"
@@ -34,12 +33,12 @@ class MasterViewController: UITabBarController {
   
   
   
-  private func setupHealthKid(){
+  private func setupHealthKit(){
     do {
        let userAgeSexAndBloodType = try ProfileDataStore.getAgeSexAndBloodType()
        print("age:\(userAgeSexAndBloodType.age)")
-      print("gender:\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)")
-      print("bloodtype:\(userAgeSexAndBloodType.bloodType.stringRepresentation)")
+       print("gender:\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)")
+       print("bloodtype:\(userAgeSexAndBloodType.bloodType.stringRepresentation)")
      } catch let error {
        print ("error \(error)")
      }

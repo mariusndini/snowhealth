@@ -9,7 +9,7 @@
         <!--Water-->
         <scene sceneID="yay-hm-Rcy">
             <objects>
-                <tableViewController id="K30-eP-p2K" customClass="WaterInputTableViewController" customModule="Snow_Health" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="K30-eP-p2K" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="aJa-ZB-3DE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -87,10 +87,6 @@
                                 </cells>
                             </tableViewSection>
                         </sections>
-                        <connections>
-                            <outlet property="dataSource" destination="K30-eP-p2K" id="FQJ-o8-vOd"/>
-                            <outlet property="delegate" destination="K30-eP-p2K" id="mxQ-pu-BDr"/>
-                        </connections>
                     </tableView>
                     <tabBarItem key="tabBarItem" title="Water" id="vyZ-NA-Tck"/>
                 </tableViewController>
