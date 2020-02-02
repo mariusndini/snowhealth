@@ -3,6 +3,36 @@ import HealthKit
 
 class MasterViewController: UITabBarController {
   static let healthStore = HKHealthStore()
+  var json:[String : Any] = [:]
+  var targets:[HKQuantityTypeIdentifier] =
+  [HKQuantityTypeIdentifier.dietarySugar,
+   HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+   HKQuantityTypeIdentifier.bodyMassIndex,
+   HKQuantityTypeIdentifier.bodyMass,
+   HKQuantityTypeIdentifier.activeEnergyBurned,
+   HKQuantityTypeIdentifier.stepCount,
+   HKQuantityTypeIdentifier.flightsClimbed,
+   HKQuantityTypeIdentifier.distanceWalkingRunning,
+   HKQuantityTypeIdentifier.dietaryWater,
+   HKQuantityTypeIdentifier.dietaryCarbohydrates,
+   HKQuantityTypeIdentifier.dietaryProtein,
+   HKQuantityTypeIdentifier.dietaryFatTotal,
+   HKQuantityTypeIdentifier.dietaryFatSaturated,
+   HKQuantityTypeIdentifier.dietaryFatMonounsaturated,
+   HKQuantityTypeIdentifier.dietaryFatPolyunsaturated,
+   HKQuantityTypeIdentifier.dietaryCholesterol,
+   HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+   HKQuantityTypeIdentifier.dietarySodium,
+   HKQuantityTypeIdentifier.dietarySugar,
+   HKQuantityTypeIdentifier.basalEnergyBurned,
+   HKQuantityTypeIdentifier.waistCircumference,
+   HKQuantityTypeIdentifier.walkingHeartRateAverage,
+   HKQuantityTypeIdentifier.restingHeartRate,
+   HKQuantityTypeIdentifier.walkingHeartRateAverage,
+   HKQuantityTypeIdentifier.environmentalAudioExposure,
+   HKQuantityTypeIdentifier.headphoneAudioExposure,
+   HKQuantityTypeIdentifier.appleStandTime
+  ]
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -24,139 +54,97 @@ class MasterViewController: UITabBarController {
         print("\(baseMessage). Reason: \(error.localizedDescription)")
         return
       }
-      
-      print("HealthKit Successfully Authorized.")
+      //print("HealthKit Successfully Authorized.")
     }
   }
 
-  
-  
-  
+
   
   private func setupHealthKit(){
     do {
        let userAgeSexAndBloodType = try ProfileDataStore.getAgeSexAndBloodType()
-       print("age:\(userAgeSexAndBloodType.age)")
-       print("gender:\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)")
-       print("bloodtype:\(userAgeSexAndBloodType.bloodType.stringRepresentation)")
+       json["age"] = "\(userAgeSexAndBloodType.age)"
+       json["gender"] =  "\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)"
+       json["bloodstype"] =  "\(userAgeSexAndBloodType.bloodType.stringRepresentation)"
      } catch let error {
        print ("error \(error)")
      }
     
-    //GET STEPS
-    guard let stepsTakenType = HKSampleType.quantityType(forIdentifier: .stepCount) else {
+      //print(HealthKitSetupAssistant.healthKitTypesToRead)
+      self.runquery2(count: 0)
+      //self.runquery(identifier: HKQuantityTypeIdentifier.dietarySugar)
+    
+    
+  }//end main class view controller
+  
+
+  /******  Runs Query for specificed identifier given   ******/
+  private func runquery2(count:Int){
+    if(count == targets.count){
+      do{
+        let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])
+        let jsonString = String(data: jsonData, encoding: String.Encoding.ascii)!
+        print (jsonString.replacingOccurrences(of: "\\", with: "")
+                         .replacingOccurrences(of: "\n", with: "")
+                         .replacingOccurrences(of: ";", with: "")
+                         .replacingOccurrences(of: "=", with: ":")
+                         .replacingOccurrences(of: "'", with: "")
+                         .replacingOccurrences(of: "", with: "")
+                         .replacingOccurrences(of: "HKQuantityTypeIdentifier", with: ""))
+      }catch {
+          print(error.localizedDescription)
+      }
       return
     }
-    ProfileDataStore.queryQuantitySum(for: stepsTakenType, unit: HKUnit.count()) { (sampleTotal, error) in
+    
+    
+    let identifier = HKQuantityTypeIdentifier.dietaryCarbohydrates
+    guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
+       return
+     }
+     
+     let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: NSDate() as Date)
+     let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: NSDate() as Date, options: [])
+
+     let query = HKSampleQuery(sampleType: id, predicate: pred, limit: 0, sortDescriptors: .none) {
+         (sampleQuery, results, error) -> Void in
+
+         if let result = results {
+            var items:[String] = []
+            for item in result {
+              if let sample = item as? HKQuantitySample {
+                items.append("\(sample)".replacingOccurrences(of: "\"", with: "")
+                                        .replacingOccurrences(of: "\n", with: ""))
+              }
+          }
+          self.json["\(self.targets[count].rawValue)"] = items
+          
+          self.runquery2(count: count + 1)
+        }//end if
+        
+     }
+     
+     MasterViewController.self.healthStore.execute(query)
+
+   }//end run query
+   
+  
+  
+  private func getSum(identifier:HKQuantityTypeIdentifier){
+    guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
+      return
+    }
+    
+    ProfileDataStore.queryQuantitySum(for: id, unit: HKUnit.count()) { (sampleTotal, error) in
       guard let sample = sampleTotal else {
+        print("error")
         return
       }
-      DispatchQueue.main.async{print("steps: \(Int(sample))")}
+      DispatchQueue.main.async{print("\(identifier.rawValue): \(sample)")}
     }
-    //------------------------------------------------------------
-    //get water consumed
-    guard let waterConsumedType = HKSampleType.quantityType(forIdentifier: .dietaryWater) else {
-      return
-    }
-    
-    ProfileDataStore.queryQuantitySum(for: waterConsumedType, unit: HKUnit.fluidOunceUS()) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("water: \(Int(sample))")}
-     }
-    
-    //------------------------------------------------------------
-    //get active cals burned
-    guard let activeCalories = HKSampleType.quantityType(forIdentifier: .activeEnergyBurned) else {
-      return
-    }
-    
-    ProfileDataStore.queryQuantitySum(for: activeCalories, unit: HKUnit.largeCalorie()) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("active_cals: \(Int(sample))")}
-     }
-    
-    //------------------------------------------------------------
-    //get stand time
-    guard let standtime = HKSampleType.quantityType(forIdentifier: .appleStandTime) else {
-      return
-    }
-    
-    ProfileDataStore.getMostRecentSample(for: standtime) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("standtime: \(sample)")}
-     }
-    
-    //------------------------------------------------------------
-    guard let bodyMass = HKSampleType.quantityType(forIdentifier: .bodyMass) else {
-      return
-    }
-    
-    ProfileDataStore.getMostRecentSample(for: bodyMass) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("bodymass: \(sample)")}
-     }
-    
-    //------------------------------------------------------------
-    guard let flightsclimbed = HKSampleType.quantityType(forIdentifier: .flightsClimbed) else {
-      return
-    }
-    
-    ProfileDataStore.getMostRecentSample(for: flightsclimbed) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("flightsclimbed: \(sample)")}
-     }
-    
-    //------------------------------------------------------------
-    guard let bmi = HKSampleType.quantityType(forIdentifier: .bodyMassIndex) else {
-      return
-    }
-    
-    ProfileDataStore.getMostRecentSample(for: bmi) { (sampleTotal, error) in
-       guard let sample = sampleTotal else {
-         return
-       }
-       DispatchQueue.main.async{print("bmi: \(sample)")}
-     }
-    
-    //------------------------------------------------------------
-    guard let carbs = HKSampleType.quantityType(forIdentifier: .dietaryCarbohydrates) else {
-      return
-    }
-  
-    let calendar = NSCalendar.current
-    let twoDaysAgo = calendar.date(byAdding: .day, value: -1, to: NSDate() as Date)
-    let currentDate = NSDate()
-    let pred = HKQuery.predicateForSamples(withStart: twoDaysAgo, end: currentDate as Date, options: [])
 
-    let query = HKSampleQuery(sampleType: carbs, predicate: pred, limit: 0, sortDescriptors: .none) {
-        (sampleQuery, results, error) -> Void in
+  }//end get sum
 
-        if let result = results {
-            for item in result {
-                if let sample = item as? HKQuantitySample {
-                    print(sample)
-                }
-            }
-            
-        }
-    }
-    MasterViewController.self.healthStore.execute(query)
-    
-    
-    
-    
-    
-  }//end set up HK
   
 
   
