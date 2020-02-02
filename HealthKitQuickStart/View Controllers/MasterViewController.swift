@@ -70,9 +70,7 @@ class MasterViewController: UITabBarController {
        print ("error \(error)")
      }
     
-      //print(HealthKitSetupAssistant.healthKitTypesToRead)
-      self.runquery2(count: 0)
-      //self.runquery(identifier: HKQuantityTypeIdentifier.dietarySugar)
+    self.runquery2(count: 0)
     
     
   }//end main class view controller
@@ -84,13 +82,15 @@ class MasterViewController: UITabBarController {
       do{
         let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])
         let jsonString = String(data: jsonData, encoding: String.Encoding.ascii)!
-        print (jsonString.replacingOccurrences(of: "\\", with: "")
+        let body = jsonString.replacingOccurrences(of: "\\", with: "")
                          .replacingOccurrences(of: "\n", with: "")
                          .replacingOccurrences(of: ";", with: "")
                          .replacingOccurrences(of: "=", with: ":")
                          .replacingOccurrences(of: "'", with: "")
                          .replacingOccurrences(of: "", with: "")
-                         .replacingOccurrences(of: "HKQuantityTypeIdentifier", with: ""))
+                         .replacingOccurrences(of: "HKQuantityTypeIdentifier", with: "")
+        print(body);
+        self.sendPost(body: body)
       }catch {
           print(error.localizedDescription)
       }
@@ -103,8 +103,12 @@ class MasterViewController: UITabBarController {
        return
      }
      
-     let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: NSDate() as Date)
-     let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: NSDate() as Date, options: [])
+     let formatter = DateFormatter()
+     formatter.dateFormat = "yyyy/MM/dd HH:mm"
+     let startTime = formatter.date(from: "2020/02/01 00:01")
+     let endTime = formatter.date(from: "2020/02/02 22:31")
+    
+     let pred = HKQuery.predicateForSamples(withStart: startTime, end: endTime, options: [])
 
      let query = HKSampleQuery(sampleType: id, predicate: pred, limit: 0, sortDescriptors: .none) {
          (sampleQuery, results, error) -> Void in
@@ -128,7 +132,7 @@ class MasterViewController: UITabBarController {
 
    }//end run query
    
-  
+  /*
   
   private func getSum(identifier:HKQuantityTypeIdentifier){
     guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
@@ -145,12 +149,64 @@ class MasterViewController: UITabBarController {
 
   }//end get sum
 
+  */
   
+  private func sendPost(body:String){
+    let url = URL(string: "https://webhook.site/534a7afc-1bd2-4b6c-aea9-01d87cd3fe87")!
+    var request = URLRequest(url: url)
+    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    request.httpMethod = "POST"
+    let parameters: [String: Any] = [
+        "body": body
+    ]
+    
+    request.httpBody = parameters.percentEncoded()
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        guard let data = data,
+            let response = response as? HTTPURLResponse,
+            error == nil else {                                              // check for fundamental networking error
+            print("error", error ?? "Unknown error")
+            return
+        }
 
-  
+        guard (200 ... 299) ~= response.statusCode else {                    // check for http errors
+            print("statusCode should be 2xx, but is \(response.statusCode)")
+            print("response = \(response)")
+            return
+        }
+
+        let responseString = String(data: data, encoding: .utf8)
+        print("responseString = \(responseString)")
+    }
+
+    task.resume()
+    
+  }//end end post
+ 
 
 }
 
 
+extension Dictionary {
+    func percentEncoded() -> Data? {
+        return map { key, value in
+            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            return escapedKey + "=" + escapedValue
+        }
+        .joined(separator: "&")
+        .data(using: .utf8)
+    }
+}
 
+extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
+}
 
