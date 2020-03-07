@@ -1,0 +1,13 @@
+{
+    "snowflake":{
+        "account":"demo106",
+        "username":"snowman",
+        "password":"BlueLeat458",
+        "warehouse":"HEALTH_WH",
+        "database":"HEALTHKIT",
+        "role":"ACCOUNTADMIN"
+    }
+}
+
+
+
