@@ -2,6 +2,9 @@ import UIKit
 import HealthKit
 
 class MasterViewController: UITabBarController {
+  
+
+  
   static let healthStore = HKHealthStore()
   var json:[String : Any] = [:]
   var targets:[HKQuantityTypeIdentifier] =
