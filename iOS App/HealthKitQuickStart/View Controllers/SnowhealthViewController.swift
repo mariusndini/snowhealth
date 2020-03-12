@@ -3,15 +3,16 @@ import UIKit
 
 class SnowhealthViewController: UITableViewController {
   
-  @IBOutlet weak var identifier: UITextField!
+
+  
   @IBOutlet weak var startdate: UIDatePicker!
   @IBOutlet weak var enddate: UIDatePicker!
-  @IBOutlet weak var status: UILabel!
+  @IBOutlet weak var identifier: UITextField!
   
   var datasend:DataSend = DataSend()
   
   public func updateStatus(){
-    status.text = "\(globals.postcount) / \(0 + 1) Loaded";
+    //status.text = "\(globals.postcount) / \(0 + 1) Loaded";
     
   }
   

@@ -2,7 +2,6 @@ import UIKit
 import HealthKit
 
 class MasterViewController: UITabBarController {
-<<<<<<< Updated upstream
   static let healthStore = HKHealthStore()
   var json:[String : Any] = [:]
   var targets:[HKQuantityTypeIdentifier] =
@@ -35,9 +34,7 @@ class MasterViewController: UITabBarController {
    HKQuantityTypeIdentifier.appleStandTime
   ]
 
-=======
-  
->>>>>>> Stashed changes
+
   override func viewDidLoad() {
     super.viewDidLoad()
     authorizeHealthKit()
