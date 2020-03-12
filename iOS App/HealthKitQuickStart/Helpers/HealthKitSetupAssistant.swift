@@ -41,7 +41,6 @@ class HealthKitSetupAssistant {
             let dietaryEnergyConsumed = HKObjectType.quantityType(forIdentifier: .dietaryEnergyConsumed),
             let dietarySodium = HKObjectType.quantityType(forIdentifier: .dietarySodium),
             let dietarySugar = HKObjectType.quantityType(forIdentifier: .dietarySugar),
-
       
             let basalenergyburned = HKObjectType.quantityType(forIdentifier: .basalEnergyBurned),
             let waistCircumference = HKObjectType.quantityType(forIdentifier: .waistCircumference),

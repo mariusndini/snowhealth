@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		657720792419BC2700A969A3 /* SnowhealthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657720782419BC2700A969A3 /* SnowhealthViewController.swift */; };
+		6583CD0A241A960C00C16388 /* DataSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6583CD09241A960C00C16388 /* DataSend.swift */; };
+		6583CD0C241AA2B600C16388 /* globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6583CD0B241AA2B600C16388 /* globals.swift */; };
 		65F1C21D23E33DD800EFE21A /* ProfileDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C21B23E33DD800EFE21A /* ProfileDataStore.swift */; };
 		AE86600B200BCFA800B4D91C /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE86600A200BCFA800B4D91C /* HealthKit.framework */; };
 		AE866019200BD4E100B4D91C /* HKBiologicalSex+StringRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE866017200BD4E100B4D91C /* HKBiologicalSex+StringRepresentation.swift */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		657720782419BC2700A969A3 /* SnowhealthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowhealthViewController.swift; sourceTree = "<group>"; };
+		6583CD09241A960C00C16388 /* DataSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSend.swift; sourceTree = "<group>"; };
+		6583CD0B241AA2B600C16388 /* globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = globals.swift; sourceTree = "<group>"; };
 		65F1C21B23E33DD800EFE21A /* ProfileDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDataStore.swift; sourceTree = "<group>"; };
 		AE865FDC2009B51F00B4D91C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AE86600A200BCFA800B4D91C /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
@@ -66,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				AE88A67A200D939700E70841 /* MasterViewController.swift */,
+				657720782419BC2700A969A3 /* SnowhealthViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -74,6 +81,8 @@
 			isa = PBXGroup;
 			children = (
 				AE86601B200C09C500B4D91C /* HealthKitSetupAssistant.swift */,
+				6583CD09241A960C00C16388 /* DataSend.swift */,
+				6583CD0B241AA2B600C16388 /* globals.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -204,7 +213,10 @@
 				AE86601A200BD4E100B4D91C /* HKBloodType+StringRepresentation.swift in Sources */,
 				AE86601C200C09C500B4D91C /* HealthKitSetupAssistant.swift in Sources */,
 				65F1C21D23E33DD800EFE21A /* ProfileDataStore.swift in Sources */,
+				6583CD0A241A960C00C16388 /* DataSend.swift in Sources */,
 				D2A5F2211F4A96D0005CD714 /* AppDelegate.swift in Sources */,
+				6583CD0C241AA2B600C16388 /* globals.swift in Sources */,
+				657720792419BC2700A969A3 /* SnowhealthViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
