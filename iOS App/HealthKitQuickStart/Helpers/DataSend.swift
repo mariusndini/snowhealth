@@ -1,7 +1,7 @@
 
 import Foundation
 import HealthKit
-
+import UIKit
 
 class DataSend{
   
@@ -101,9 +101,11 @@ class DataSend{
      }
      
     DataSend.self.healthStore.execute(query)
-
+    
    }//end run query
    
+  
+  
   private func sendPost(body:String){
 
     let semaphore = DispatchSemaphore (value: 0)
@@ -123,6 +125,7 @@ class DataSend{
         return
       }
       print(String(data: data, encoding: .utf8)!)
+      
       globals.postcount = globals.postcount + 1
       semaphore.signal()
       

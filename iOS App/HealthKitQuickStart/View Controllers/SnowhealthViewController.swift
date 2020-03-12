@@ -8,12 +8,12 @@ class SnowhealthViewController: UITableViewController {
   @IBOutlet weak var startdate: UIDatePicker!
   @IBOutlet weak var enddate: UIDatePicker!
   @IBOutlet weak var identifier: UITextField!
+  @IBOutlet weak var status: UILabel!
   
   var datasend:DataSend = DataSend()
   
   public func updateStatus(){
     //status.text = "\(globals.postcount) / \(0 + 1) Loaded";
-    
   }
   
   @IBAction func sendbtn(_ sender: UIButton) {
@@ -34,7 +34,7 @@ class SnowhealthViewController: UITableViewController {
     }
     
     //get difference in days
-    let diffInDays = Calendar.current.dateComponents([.day], from: startdate.date, to: enddate.date).day
+    //let diffInDays = Calendar.current.dateComponents([.day], from: startdate.date, to: enddate.date).day
 
     // Iterate through all the days
     let dayDurationInSeconds: TimeInterval = 60*60*24
