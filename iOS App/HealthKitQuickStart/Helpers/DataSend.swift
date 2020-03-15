@@ -61,19 +61,20 @@ class DataSend{
         
         // THIS WILL SEND DATE THRU POST
         self.sendPost(body: body)
+
       }catch {
           print(error.localizedDescription)
       }
       return
     }
     
-    let identifier = targets[count]//HKQuantityTypeIdentifier.dietaryCarbohydrates
+    let identifier = targets[count]
     guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
        return
      }
      
      let formatter = DateFormatter()
-     formatter.dateFormat = "yyyy/MM/dd HH:mm"
+     formatter.dateFormat = "yyyy/MM/dd"
      let endTime = formatter.date(from: date)!
     
      let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: endTime)
@@ -86,12 +87,10 @@ class DataSend{
             var items:[String] = []
             for item in result {
               if let sample = item as? HKQuantitySample {
-                items.append("\(sample)".replacingOccurrences(of: "\"", with: "")
-                                        .replacingOccurrences(of: "\n", with: ""))
+                items.append("\(sample)".replacingOccurrences(of: "\"", with: "").replacingOccurrences(of: "\n", with: ""))
               }
           }
           self.json["\(self.targets[count].rawValue)"] = items
-          print(date);
           self.runquery(count: count + 1, date:date, identity: identity)
         }//end if
         
@@ -104,7 +103,6 @@ class DataSend{
   
   
   private func sendPost(body:String){
-
     let semaphore = DispatchSemaphore (value: 0)
 
     let parameters = "{\"body\":\(body)}"

@@ -8,8 +8,6 @@ class SnowhealthViewController: UITableViewController {
   @IBOutlet weak var identifier: UITextField!
   @IBOutlet weak var status: UILabel!
   
-  var datasend:DataSend = DataSend()
-  
   weak var timer: Timer?
 
   @IBAction func sendbtn(_ sender: UIButton) {
@@ -37,7 +35,7 @@ class SnowhealthViewController: UITableViewController {
       timer = Timer.scheduledTimer(withTimeInterval: 0.250, repeats: true) { [weak self] _ in
         self!.status.text = "\(globals.postcount) / \(diffInDays! + 1) Loaded";
 
-        if(globals.postcount == diffInDays){
+        if(globals.postcount == diffInDays!){
           self!.status.text = "👍 done";
         }
       }
@@ -53,13 +51,14 @@ class SnowhealthViewController: UITableViewController {
   
     // Iterate through all the days
     let dayDurationInSeconds: TimeInterval = 60*60*24
-    for date in stride(from: startdate.date, to: enddate.date, by: dayDurationInSeconds) {
+    for date in stride(from: startdate.date, to: enddate.date + 2, by: dayDurationInSeconds) {
       var runDate = ""
       com = Calendar.current.dateComponents([.year, .month, .day], from: date)
       if let day = com.day, let month = com.month, let year = com.year {
-          runDate = "\(year)/\(month)/\(day) 23.59"
+          runDate = "\(year)/\(month)/\(day)"
       }
-
+      
+      let datasend:DataSend = DataSend()
       datasend.runquery(count: 0, date: runDate, identity: identifier.text!)
       
     }
