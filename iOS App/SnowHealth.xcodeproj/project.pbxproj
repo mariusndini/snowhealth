@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -107,6 +107,7 @@
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			wrapsLines = 0;
 		};
 		D2A5F2011F4A9144005CD714 /* Products */ = {
 			isa = PBXGroup;
@@ -174,7 +175,7 @@
 				};
 			};
 			buildConfigurationList = D2A5F1FB1F4A9143005CD714 /* Build configuration list for PBXProject "SnowHealth" */;
-			compatibilityVersion = "Xcode 8.0";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -336,7 +337,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -350,7 +352,10 @@
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -368,7 +373,10 @@
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_VERSION = 4.0;

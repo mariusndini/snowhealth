@@ -34,24 +34,21 @@ class DataSend{
    HKQuantityTypeIdentifier.walkingHeartRateAverage,
    HKQuantityTypeIdentifier.environmentalAudioExposure,
    HKQuantityTypeIdentifier.headphoneAudioExposure,
-   HKQuantityTypeIdentifier.appleStandTime
+   HKQuantityTypeIdentifier.appleStandTime,
+   HKQuantityTypeIdentifier.appleExerciseTime
   ]
   
   /******  Runs Query for specificed identifier given   ******/
   public func runquery(count:Int, date:String, identity:String){
-    if(count == targets.count){
+    if(count == targets.count - 1){ // exit recursive functon
       do {
-         let userAgeSexAndBloodType = try ProfileDataStore.getAgeSexAndBloodType()
-         json["age"] = "\(userAgeSexAndBloodType.age)"
-         json["gender"] =  "\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)"
-         json["bloodstype"] =  "\(userAgeSexAndBloodType.bloodType.stringRepresentation)"
-         json["identifier"] = identity
-         json["loaddate"] = "\(Date())"
-       } catch let error {
-         print ("error \(error)")
-      }
-      
-      do{
+        let userAgeSexAndBloodType = try ProfileDataStore.getAgeSexAndBloodType()
+        json["age"] = "\(userAgeSexAndBloodType.age)"
+        json["gender"] =  "\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)"
+        json["bloodstype"] =  "\(userAgeSexAndBloodType.bloodType.stringRepresentation)"
+        json["identifier"] = identity
+        json["loaddate"] = "\(Date())"
+
         let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])
         let jsonString = String(data: jsonData, encoding: String.Encoding.ascii)!
         let body:String = jsonString.replacingOccurrences(of: "\\", with: "")
@@ -70,14 +67,14 @@ class DataSend{
       return
     }
     
-    let identifier = HKQuantityTypeIdentifier.dietaryCarbohydrates
+    let identifier = targets[count]//HKQuantityTypeIdentifier.dietaryCarbohydrates
     guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
        return
      }
      
      let formatter = DateFormatter()
      formatter.dateFormat = "yyyy/MM/dd HH:mm"
-     let endTime = formatter.date(from: date)!//"2020/02/02 23:59")!
+     let endTime = formatter.date(from: date)!
     
      let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: endTime)
      let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: endTime, options: [])
@@ -94,7 +91,7 @@ class DataSend{
               }
           }
           self.json["\(self.targets[count].rawValue)"] = items
-          
+          print(date);
           self.runquery(count: count + 1, date:date, identity: identity)
         }//end if
         
@@ -134,7 +131,6 @@ class DataSend{
 
     task.resume()
     semaphore.wait()
-
     
   }//end end post
   

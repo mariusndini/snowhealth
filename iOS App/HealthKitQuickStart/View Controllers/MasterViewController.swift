@@ -4,9 +4,9 @@ import HealthKit
 class MasterViewController: UITabBarController {
   static let healthStore = HKHealthStore()
   var json:[String : Any] = [:]
+  //https://developer.apple.com/documentation/healthkit/hkquantitytypeidentifier
   var targets:[HKQuantityTypeIdentifier] =
-  [HKQuantityTypeIdentifier.dietarySugar,
-   HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+  [
    HKQuantityTypeIdentifier.bodyMassIndex,
    HKQuantityTypeIdentifier.bodyMass,
    HKQuantityTypeIdentifier.activeEnergyBurned,
@@ -31,7 +31,8 @@ class MasterViewController: UITabBarController {
    HKQuantityTypeIdentifier.walkingHeartRateAverage,
    HKQuantityTypeIdentifier.environmentalAudioExposure,
    HKQuantityTypeIdentifier.headphoneAudioExposure,
-   HKQuantityTypeIdentifier.appleStandTime
+   HKQuantityTypeIdentifier.appleStandTime,
+   HKQuantityTypeIdentifier.appleExerciseTime
   ]
 
 
