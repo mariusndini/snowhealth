@@ -45,6 +45,13 @@ The users are asked to provide permission for the bridge application to  pull th
   ]
 `
 
+The bridge application look like below and is simple in nature since its only goal is to push data from the iPhone to the cloud. 
+
+Essentially the user picks a start date, end date, enters a unique identifier to filter front end apps and data is uploaded one day at a time.
+
+![img](https://github.com/mariusndini/img/blob/master/HealthiOSBridge.png)
+
+
 
 ### HTTP Post
 The iOS bridge application is to send the data to AWS API Gateway through an HTTP post call. This HTTP post call is formatted in JSON and contains all the information that the user gives permission to pull above. 

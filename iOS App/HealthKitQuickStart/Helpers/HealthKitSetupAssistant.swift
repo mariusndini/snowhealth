@@ -20,11 +20,11 @@ class HealthKitSetupAssistant {
     //2. Prepare the data types that will interact with HealthKit
     guard   let dateOfBirth = HKObjectType.characteristicType(forIdentifier: .dateOfBirth),
             let bloodType = HKObjectType.characteristicType(forIdentifier: .bloodType),
-            let biologicalSex = HKObjectType.characteristicType(forIdentifier: .biologicalSex),
+            let gender = HKObjectType.characteristicType(forIdentifier: .biologicalSex),
             let bodyMassIndex = HKObjectType.quantityType(forIdentifier: .bodyMassIndex),
             let height = HKObjectType.quantityType(forIdentifier: .height),
             let bodyMass = HKObjectType.quantityType(forIdentifier: .bodyMass),
-      
+
             let activeEnergy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned),
             let steps = HKObjectType.quantityType(forIdentifier: .stepCount),
             let flights = HKObjectType.quantityType(forIdentifier: .flightsClimbed),
@@ -44,22 +44,23 @@ class HealthKitSetupAssistant {
       
             let basalenergyburned = HKObjectType.quantityType(forIdentifier: .basalEnergyBurned),
             let waistCircumference = HKObjectType.quantityType(forIdentifier: .waistCircumference),
-            let heartRate = HKObjectType.quantityType(forIdentifier: .walkingHeartRateAverage),
+            let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate),
+            let heartRateSDNN = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN),
             let restingHeartRate = HKObjectType.quantityType(forIdentifier: .restingHeartRate),
             let walkingHeartRateAverage = HKObjectType.quantityType(forIdentifier: .walkingHeartRateAverage),
 
             let environmentalAudioExposure = HKObjectType.quantityType(forIdentifier: .environmentalAudioExposure),
             let headphoneAudioExposure = HKObjectType.quantityType(forIdentifier: .headphoneAudioExposure),
-            let appleStandTime = HKObjectType.quantityType(forIdentifier: .appleStandTime)
-
+            let appleStandTime = HKObjectType.quantityType(forIdentifier: .appleStandTime),
+            let appleExerciseTime = HKObjectType.quantityType(forIdentifier: .appleExerciseTime)
       
       else {
         completion(false, HealthkitSetupError.dataTypeNotAvailable)
         return
     }
     
-    self.healthKitTypesToRead = [dateOfBirth, bloodType, environmentalAudioExposure,
-                                                   biologicalSex, headphoneAudioExposure,
+    self.healthKitTypesToRead = [dateOfBirth, heartRateSDNN, bloodType, environmentalAudioExposure,
+                                                   gender, headphoneAudioExposure,
                                                    bodyMassIndex, dietaryEnergyConsumed,
                                                    height, dietaryCholesterol, distanceWalkingRunning,
                                                    bodyMass, dietaryFatSaturated,
@@ -69,7 +70,8 @@ class HealthKitSetupAssistant {
                                                    carbs, dietaryFatMonounsaturated,
                                                    basalenergyburned, waistCircumference,
                                                    activeEnergy, heartRate, appleStandTime,
-                                                   restingHeartRate, walkingHeartRateAverage]
+                                                   restingHeartRate, walkingHeartRateAverage,
+                                                   appleExerciseTime]
     
     //4. Request Authorization
     HKHealthStore().requestAuthorization(toShare: .none, read: healthKitTypesToRead) { (success, error) in

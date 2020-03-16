@@ -11,6 +11,7 @@ class SnowhealthViewController: UITableViewController {
   weak var timer: Timer?
 
   @IBAction func sendbtn(_ sender: UIButton) {
+    print("send btn pushed");
     globals.postcount = 0;
     var start:String = ""
     var end:String = ""

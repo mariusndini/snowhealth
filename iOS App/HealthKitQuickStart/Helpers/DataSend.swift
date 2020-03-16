@@ -7,37 +7,8 @@ class DataSend{
   
   static let healthStore = HKHealthStore()
   var json:[String : Any] = [:]
-  var targets:[HKQuantityTypeIdentifier] =
-  [HKQuantityTypeIdentifier.dietarySugar,
-   HKQuantityTypeIdentifier.dietaryEnergyConsumed,
-   HKQuantityTypeIdentifier.bodyMassIndex,
-   HKQuantityTypeIdentifier.bodyMass,
-   HKQuantityTypeIdentifier.activeEnergyBurned,
-   HKQuantityTypeIdentifier.stepCount,
-   HKQuantityTypeIdentifier.flightsClimbed,
-   HKQuantityTypeIdentifier.distanceWalkingRunning,
-   HKQuantityTypeIdentifier.dietaryWater,
-   HKQuantityTypeIdentifier.dietaryCarbohydrates,
-   HKQuantityTypeIdentifier.dietaryProtein,
-   HKQuantityTypeIdentifier.dietaryFatTotal,
-   HKQuantityTypeIdentifier.dietaryFatSaturated,
-   HKQuantityTypeIdentifier.dietaryFatMonounsaturated,
-   HKQuantityTypeIdentifier.dietaryFatPolyunsaturated,
-   HKQuantityTypeIdentifier.dietaryCholesterol,
-   HKQuantityTypeIdentifier.dietaryEnergyConsumed,
-   HKQuantityTypeIdentifier.dietarySodium,
-   HKQuantityTypeIdentifier.dietarySugar,
-   HKQuantityTypeIdentifier.basalEnergyBurned,
-   HKQuantityTypeIdentifier.waistCircumference,
-   HKQuantityTypeIdentifier.walkingHeartRateAverage,
-   HKQuantityTypeIdentifier.restingHeartRate,
-   HKQuantityTypeIdentifier.walkingHeartRateAverage,
-   HKQuantityTypeIdentifier.environmentalAudioExposure,
-   HKQuantityTypeIdentifier.headphoneAudioExposure,
-   HKQuantityTypeIdentifier.appleStandTime,
-   HKQuantityTypeIdentifier.appleExerciseTime
-  ]
-  
+  var targets = MasterViewController.targets
+
   /******  Runs Query for specificed identifier given   ******/
   public func runquery(count:Int, date:String, identity:String){
     if(count == targets.count - 1){ // exit recursive functon
@@ -67,12 +38,13 @@ class DataSend{
       }
       return
     }
-    
+  
+
     let identifier = targets[count]
     guard let id = HKSampleType.quantityType(forIdentifier: identifier) else {
        return
      }
-     
+    
      let formatter = DateFormatter()
      formatter.dateFormat = "yyyy/MM/dd"
      let endTime = formatter.date(from: date)!
@@ -103,6 +75,7 @@ class DataSend{
   
   
   private func sendPost(body:String){
+    print("Sending Post")
     let semaphore = DispatchSemaphore (value: 0)
 
     let parameters = "{\"body\":\(body)}"
