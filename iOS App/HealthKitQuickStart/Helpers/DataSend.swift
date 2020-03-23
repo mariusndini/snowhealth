@@ -17,7 +17,8 @@ class DataSend{
         json["age"] = "\(userAgeSexAndBloodType.age)"
         json["gender"] =  "\(userAgeSexAndBloodType.biologicalSex.stringRepresentation)"
         json["bloodstype"] =  "\(userAgeSexAndBloodType.bloodType.stringRepresentation)"
-        json["identifier"] = identity
+        json["identifier"] = identity.components(separatedBy: "|")[0]
+        json["zip"] = identity.components(separatedBy: "|")[1]
         json["loaddate"] = "\(Date())"
 
         let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])

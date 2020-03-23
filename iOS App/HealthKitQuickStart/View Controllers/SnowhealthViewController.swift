@@ -7,6 +7,8 @@ class SnowhealthViewController: UITableViewController {
   @IBOutlet weak var enddate: UIDatePicker!
   @IBOutlet weak var identifier: UITextField!
   @IBOutlet weak var status: UILabel!
+  @IBOutlet weak var zip: UITextField!
+  
   
   weak var timer: Timer?
 
@@ -60,7 +62,7 @@ class SnowhealthViewController: UITableViewController {
       }
       
       let datasend:DataSend = DataSend()
-      datasend.runquery(count: 0, date: runDate, identity: identifier.text!)
+      datasend.runquery(count: 0, date: runDate, identity: "\(identifier.text!)|\(zip.text!)")
       
     }
     
