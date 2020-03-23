@@ -353,6 +353,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = HealthKitQuickStart/HealthKitQuickStart.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -360,7 +361,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4;
+				MARKETING_VERSION = 5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -375,6 +376,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = HealthKitQuickStart/HealthKitQuickStart.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -382,7 +384,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4;
+				MARKETING_VERSION = 5;
 				PRODUCT_BUNDLE_IDENTIFIER = project.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_VERSION = 5.0;

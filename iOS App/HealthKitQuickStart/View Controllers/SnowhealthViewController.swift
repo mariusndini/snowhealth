@@ -10,8 +10,26 @@ class SnowhealthViewController: UITableViewController {
   @IBOutlet weak var zip: UITextField!
   
   
-  weak var timer: Timer?
+  override func viewDidLoad() {
+    super.viewDidLoad()
+  
+    func randomString(length: Int) -> String {
+      let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+      return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+    
+    identifier.text = randomString(length: 5).uppercased()
+  
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    // Dispose of any resources that can be recreated.
+  }
 
+  
+  weak var timer: Timer?
+  
   @IBAction func sendbtn(_ sender: UIButton) {
     print("send btn pushed");
     globals.postcount = 0;
