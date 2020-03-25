@@ -29,7 +29,7 @@
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>We would like to share your water consumption, energy and BMI with other apps</string>
 	<key>UILaunchStoryboardName</key>
-	<string>Main</string>
+	<string>Launch</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
