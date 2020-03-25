@@ -26,6 +26,11 @@ class SnowhealthViewController: UIViewController {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
+  
+  //close KB on app touch 
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+      self.view.endEditing(true)
+  }
 
   
   weak var timer: Timer?
@@ -86,11 +91,12 @@ class SnowhealthViewController: UIViewController {
     
 
      
-}//end send btn
+  }//end send btn
   
 
 }//end view controller
 
+//Iterate thru dates
 extension Date: Strideable {
     public func distance(to other: Date) -> TimeInterval {
         return other.timeIntervalSinceReferenceDate - self.timeIntervalSinceReferenceDate
