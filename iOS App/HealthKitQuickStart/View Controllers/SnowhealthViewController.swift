@@ -1,13 +1,13 @@
 import Foundation
 import UIKit
 
-class SnowhealthViewController: UITableViewController {
+class SnowhealthViewController: UIViewController {
   
   @IBOutlet weak var startdate: UIDatePicker!
   @IBOutlet weak var enddate: UIDatePicker!
   @IBOutlet weak var identifier: UITextField!
-  @IBOutlet weak var status: UILabel!
   @IBOutlet weak var zip: UITextField!
+  @IBOutlet weak var status: UILabel!
   
   
   override func viewDidLoad() {
@@ -30,7 +30,7 @@ class SnowhealthViewController: UITableViewController {
   
   weak var timer: Timer?
   
-  @IBAction func sendbtn(_ sender: UIButton) {
+  @IBAction func sendbtn(_ sender: Any) {
     print("send btn pushed");
     globals.postcount = 0;
     var start:String = ""

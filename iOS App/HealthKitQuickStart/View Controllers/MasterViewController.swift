@@ -38,6 +38,7 @@ class MasterViewController: UITabBarController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    UIApplication.shared.isIdleTimerDisabled = true
     authorizeHealthKit()
   }
   
