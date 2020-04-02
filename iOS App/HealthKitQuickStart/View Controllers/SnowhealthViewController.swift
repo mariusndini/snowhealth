@@ -18,8 +18,9 @@ class SnowhealthViewController: UIViewController {
       return String((0..<length).map{ _ in letters.randomElement()! })
     }
     
-    identifier.text = randomString(length: 5).uppercased()
-  
+    globals.pin = randomString(length: 5).uppercased()
+    identifier.text = globals.pin
+    
   }
   
   override func didReceiveMemoryWarning() {
@@ -33,8 +34,13 @@ class SnowhealthViewController: UIViewController {
   }
 
   
-  weak var timer: Timer?
+  @IBAction func updateIdentifier(_ sender: UITextField) {
+    globals.pin = identifier.text!
+  }
   
+  
+  
+  weak var timer: Timer?
   @IBAction func sendbtn(_ sender: Any) {
     print("send btn pushed");
     globals.postcount = 0;

@@ -8,7 +8,8 @@ class HealthKitSetupAssistant {
   }
   
   public static var healthKitTypesToRead: Set<HKObjectType> = []
-  
+  //static let healthStore = HKHealthStore()
+
   class func authorizeHealthKit(completion: @escaping (Bool, Error?) -> Swift.Void) {
     
     //1. Check to see if HealthKit Is Available on this device

@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		650F1C502433AD930087CA72 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 650F1C4F2433AD930087CA72 /* WebKit.framework */; };
+		653952B4242BDDA80037F077 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653952B3242BDDA80037F077 /* AboutViewController.swift */; };
 		657720792419BC2700A969A3 /* SnowhealthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657720782419BC2700A969A3 /* SnowhealthViewController.swift */; };
 		6583CD0A241A960C00C16388 /* DataSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6583CD09241A960C00C16388 /* DataSend.swift */; };
 		6583CD0C241AA2B600C16388 /* globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6583CD0B241AA2B600C16388 /* globals.swift */; };
+		65AED6B9242D058400B646C3 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AED6B8242D058400B646C3 /* DashboardViewController.swift */; };
 		65F1C21D23E33DD800EFE21A /* ProfileDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C21B23E33DD800EFE21A /* ProfileDataStore.swift */; };
 		AE86600B200BCFA800B4D91C /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE86600A200BCFA800B4D91C /* HealthKit.framework */; };
 		AE866019200BD4E100B4D91C /* HKBiologicalSex+StringRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE866017200BD4E100B4D91C /* HKBiologicalSex+StringRepresentation.swift */; };
@@ -22,9 +25,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		650F1C4F2433AD930087CA72 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		653952B3242BDDA80037F077 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		657720782419BC2700A969A3 /* SnowhealthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowhealthViewController.swift; sourceTree = "<group>"; };
 		6583CD09241A960C00C16388 /* DataSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSend.swift; sourceTree = "<group>"; };
 		6583CD0B241AA2B600C16388 /* globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = globals.swift; sourceTree = "<group>"; };
+		65AED6B8242D058400B646C3 /* DashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
 		65F1C21B23E33DD800EFE21A /* ProfileDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDataStore.swift; sourceTree = "<group>"; };
 		AE865FDC2009B51F00B4D91C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AE86600A200BCFA800B4D91C /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
@@ -45,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				650F1C502433AD930087CA72 /* WebKit.framework in Frameworks */,
 				AE86600B200BCFA800B4D91C /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +70,7 @@
 		AE866009200BCFA800B4D91C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				650F1C4F2433AD930087CA72 /* WebKit.framework */,
 				AE86600A200BCFA800B4D91C /* HealthKit.framework */,
 			);
 			name = Frameworks;
@@ -73,6 +81,8 @@
 			children = (
 				AE88A67A200D939700E70841 /* MasterViewController.swift */,
 				657720782419BC2700A969A3 /* SnowhealthViewController.swift */,
+				653952B3242BDDA80037F077 /* AboutViewController.swift */,
+				65AED6B8242D058400B646C3 /* DashboardViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -217,6 +227,8 @@
 				6583CD0A241A960C00C16388 /* DataSend.swift in Sources */,
 				D2A5F2211F4A96D0005CD714 /* AppDelegate.swift in Sources */,
 				6583CD0C241AA2B600C16388 /* globals.swift in Sources */,
+				65AED6B9242D058400B646C3 /* DashboardViewController.swift in Sources */,
+				653952B4242BDDA80037F077 /* AboutViewController.swift in Sources */,
 				657720792419BC2700A969A3 /* SnowhealthViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -353,7 +365,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = HealthKitQuickStart/HealthKitQuickStart.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -361,7 +373,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7;
+				MARKETING_VERSION = 8.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -376,7 +388,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = HealthKitQuickStart/HealthKitQuickStart.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CK5Z7CBCA4;
 				INFOPLIST_FILE = "$(SRCROOT)/HealthKitQuickStart/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -384,7 +396,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7;
+				MARKETING_VERSION = 8.2;
 				PRODUCT_BUNDLE_IDENTIFIER = project.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_VERSION = 5.0;
