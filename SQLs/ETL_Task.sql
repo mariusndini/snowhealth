@@ -810,7 +810,7 @@ create or replace table HK.WALKINGHEARTAVG as (
 );
 
 create or replace table HK.POP_AGG2 AS (
-    select DISTINCT
+   select DISTINCT
     DP.ID
     ,DP.DATE
     ,AEB.VALUE as ACTIVE_ENERGY_BURNED
@@ -830,6 +830,19 @@ create or replace table HK.POP_AGG2 AS (
     ,SUG.VALUE AS SUGAR
     ,WRD.VALUE AS WALK_RUN
     
+    ,HRTRT.DATA AS HEART_RATE_ARR
+    ,RHRTRT.DATA AS REST_HEART_RATE_ARR
+    ,SDNNHRTRT.DATA AS SDNN_HEART_RATE_ARR
+    ,WHRTRT.DATA AS WALK_HEART_RATE_ARR
+    ,TAST.DATA AS STAND_TIME_ARR
+    ,ENAUDIO.DATA AS ENVIRONMENT_AUDIO_ARR
+    ,HPAUDIO.DATA AS HEADPHONE_AUDIO_ARR
+    ,FCDETAIL.DATA AS FLIGHTS_ARR
+    ,WRDIST.DATA AS WALK_RUN_ARR
+    ,STEPSDET.DATA AS STEPS_ARR
+    ,AEBDET.DATA AS ACTIVE_ENERGY_ARR
+    ,BASALDET.DATA AS BASAL_ARR
+
     from "HEALTHKIT"."HK"."DATED_POP" DP 
         LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."ACTIVE_ENERGY_BURNED" group by 1,2,4) AEB ON DP.ID = AEB.ID AND DP.DATE = AEB.DATE
         LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."APPLESTANDTIME" group by 1,2,4) AST ON DP.ID = AST.ID AND DP.DATE = AST.DATE
@@ -847,8 +860,45 @@ create or replace table HK.POP_AGG2 AS (
         LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."STEPCOUNT" group by 1,2,4) STEPS ON DP.ID = STEPS.ID AND DP.DATE = STEPS.DATE
         LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."SUGAR" group by 1,2,4) SUG ON DP.ID = SUG.ID AND DP.DATE = SUG.DATE
         LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."WALKRUNDISTANCE" group by 1,2,4) WRD ON DP.ID = WRD.ID AND DP.DATE = WRD.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."HEARTRATE"
+                    group by ID, date_trunc('day',STARTTIME) ) HRTRT ON HRTRT.ID=DP.ID AND HRTRT.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."RESTINGHEARTRATE"
+                    group by ID, date_trunc('day',STARTTIME) ) RHRTRT ON RHRTRT.ID=DP.ID AND RHRTRT.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."HEARTRATESDNN"
+                    group by ID, date_trunc('day',STARTTIME) ) SDNNHRTRT ON SDNNHRTRT.ID=DP.ID AND SDNNHRTRT.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."WALKINGHEARTAVG"
+                    group by ID, date_trunc('day',STARTTIME) ) WHRTRT ON WHRTRT.ID=DP.ID AND WHRTRT.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."APPLESTANDTIME"
+                    group by ID, date_trunc('day',STARTTIME) ) TAST ON TAST.ID=DP.ID AND TAST.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."ENVIRONMENTAUDIO"
+                    group by ID, date_trunc('day',STARTTIME) ) ENAUDIO ON ENAUDIO.ID=DP.ID AND ENAUDIO.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."HEAPHONEAUDIO"
+                    group by ID, date_trunc('day',STARTTIME) ) HPAUDIO ON HPAUDIO.ID=DP.ID AND HPAUDIO.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."FLIGHTSCLIMBED"
+                    group by ID, date_trunc('day',STARTTIME) ) FCDETAIL ON FCDETAIL.ID=DP.ID AND FCDETAIL.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."WALKRUNDISTANCE"
+                    group by ID, date_trunc('day',STARTTIME) ) WRDIST ON WRDIST.ID=DP.ID AND WRDIST.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."STEPCOUNT"
+                    group by ID, date_trunc('day',STARTTIME) ) STEPSDET ON STEPSDET.ID=DP.ID AND STEPSDET.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."ACTIVE_ENERGY_BURNED"
+                    group by ID, date_trunc('day',STARTTIME) ) AEBDET ON AEBDET.ID=DP.ID AND AEBDET.DATE = DP.DATE
+        LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
+                    from "HEALTHKIT"."HK"."BASALENERGYBURNED"
+                    group by ID, date_trunc('day',STARTTIME) ) BASALDET ON BASALDET.ID=DP.ID AND BASALDET.DATE = DP.DATE
+                    
+  order by 1 asc, 2 asc
 
-    order by 1 asc, 2 asc
 );
 
 ALTER TABLE "HEALTHKIT"."HK"."POP_AGG" SWAP WITH "HEALTHKIT"."HK"."POP_AGG2";
