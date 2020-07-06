@@ -10,7 +10,7 @@ class DashboardViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    let url = URL(string: "https://appslications.s3.amazonaws.com/HealthkitApp/index.html#/pin/\(globals.pin)")
+    let url = URL(string: "https://appslications.s3.amazonaws.com/HealthkitApp/index.html#/pin/\(UserDefaults.standard.string(forKey: "pin")!)")
     let request = URLRequest(url: url!)
     
     webview.load(request)

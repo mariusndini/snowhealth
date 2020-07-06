@@ -9,8 +9,46 @@ class DataSend{
   var json:[String : Any] = [:]
   var targets = MasterViewController.targets
 
+  /*
+  static func retrieveSleepAnalysis() {
+    if let sleepType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis) {
+      let date = "2020/4/8"
+      let formatter = DateFormatter()
+      formatter.dateFormat = "yyyy/MM/dd"
+      let endTime = formatter.date(from: date)!
+     
+      let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: endTime)
+      let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: endTime, options: [])
+
+      // we create our query with a block completion to execute
+      let query = HKSampleQuery(sampleType: sleepType, predicate: pred, limit: 0, sortDescriptors: .none) { (query, tmpResult, error) -> Void in
+               if error != nil {
+                   // something happened
+                   return
+               }
+               if let result = tmpResult {
+                   // do something with my data
+                   for item in result {
+                       if let sample = item as? HKCategorySample {
+                        let value = (sample.value == HKCategoryValueSleepAnalysis.inBed.rawValue) ? "InBed" : "Asleep"
+                        print("Healthkit sleep: \(sample.startDate) \(sample) - value: \(value)")
+                       }
+                   }
+               }
+           }
+           // finally, we execute our query
+      healthStore.execute(query)
+       }
+   }
+ 
+ */
+  
+  
+  
+  
   /******  Runs Query for specificed identifier given   ******/
   public func runquery(count:Int, date:String, identity:String){
+    //RECURSIVE FUNCTION --> handles data
     if(count == targets.count - 1){ // exit recursive functon
       do {
         let userAgeSexAndBloodType = try ProfileDataStore.getAgeSexAndBloodType()
@@ -32,6 +70,7 @@ class DataSend{
                          .replacingOccurrences(of: "HKQuantityTypeIdentifier", with: "")
         
         // THIS WILL SEND DATE THRU POST
+        //print(body);
         self.sendPost(body: body)
 
       }catch {
@@ -52,10 +91,9 @@ class DataSend{
     
      let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: endTime)
      let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: endTime, options: [])
-
+     
      let query = HKSampleQuery(sampleType: id, predicate: pred, limit: 0, sortDescriptors: .none) {
          (sampleQuery, results, error) -> Void in
-
          if let result = results {
             var items:[String] = []
             for item in result {
@@ -76,7 +114,7 @@ class DataSend{
   
   
   private func sendPost(body:String){
-    print("Sending Post")
+    //print("Sending Post")
     let semaphore = DispatchSemaphore (value: 0)
 
     let parameters = "{\"body\":\(body)}"
@@ -93,11 +131,11 @@ class DataSend{
         print(String(describing: error))
         return
       }
-      print(String(data: data, encoding: .utf8)!)
+      print("Sent - Resp: \(String(data: data, encoding: .utf8)!)")
       
       globals.postcount = globals.postcount + 1
       semaphore.signal()
-      
+
   
     }
 

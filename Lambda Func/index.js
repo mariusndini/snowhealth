@@ -1,31 +1,33 @@
-﻿const config = require('./config.json');
-const snowflake = require('./snowflakeWrapper.js');
-var dbConn = null;
+﻿var config = {
+    "amazon":{
+    "UserPoolId": "USER_POOL_ID",
+        "ClientId": "CLIENT_ID"
+    },
+    "kinesis":{
+        "region": "us-east-1",
+        "apiVersion": "2015-08-04"
+    }
+}
+
+const AWS = require('aws-sdk');
+var kinesis = new AWS.Firehose(config.kinesis);
 
 exports.handler = async (event) => {
-    return snowflake.connect()
-    .then((dbConnection)=>{
-        dbConn = dbConnection;
-        return;
+    var json = JSON.stringify(event.body);
     
-    }).then(()=>{
-        var SQL = 'insert into \"HEALTHKIT\".\"PUBLIC\".\"HEALTHKIT_IMPORT\"(select parse_json (column1) from values(\'' + JSON.stringify(event.body) + '\'))';
-        console.log(SQL);
-        
-        return snowflake.runSQL(dbConn, SQL).then((data)=>{
-            console.log(Date.now(), data);
-
-            const response = {
-                statusCode: 200,
-                body: data,
-            };
-            return response;
-
-        })
-    })
-
+    kinesis.putRecord({
+	Record:{Data: json},
+        DeliveryStreamName: 'health-data-stream'
+    }, function(err, data) {
+        if (err) {
+            console.error(err);
+        }
+        console.log(data);
+    });
     
 };
+
+
 
 
 

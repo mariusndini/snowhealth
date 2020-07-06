@@ -53,8 +53,10 @@ class HealthKitSetupAssistant {
             let environmentalAudioExposure = HKObjectType.quantityType(forIdentifier: .environmentalAudioExposure),
             let headphoneAudioExposure = HKObjectType.quantityType(forIdentifier: .headphoneAudioExposure),
             let appleStandTime = HKObjectType.quantityType(forIdentifier: .appleStandTime),
-            let appleExerciseTime = HKObjectType.quantityType(forIdentifier: .appleExerciseTime)
-      
+            let appleExerciseTime = HKObjectType.quantityType(forIdentifier: .appleExerciseTime),
+            let sleep = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)
+
+
       else {
         completion(false, HealthkitSetupError.dataTypeNotAvailable)
         return
@@ -72,7 +74,7 @@ class HealthKitSetupAssistant {
                                                    basalenergyburned, waistCircumference,
                                                    activeEnergy, heartRate, appleStandTime,
                                                    restingHeartRate, walkingHeartRateAverage,
-                                                   appleExerciseTime]
+                                                   appleExerciseTime, sleep]
     
     //4. Request Authorization
     HKHealthStore().requestAuthorization(toShare: .none, read: healthKitTypesToRead) { (success, error) in
