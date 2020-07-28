@@ -52,7 +52,6 @@ Essentially the user picks a start date, end date, enters a unique identifier to
 ![img](https://github.com/mariusndini/img/blob/master/HealthiOSBridge.png)
 
 
-
 ### HTTP Post
 The iOS bridge application is to send the data to AWS API Gateway through an HTTP post call. This HTTP post call is formatted in JSON and contains all the information that the user gives permission to pull above. 
 
@@ -80,3 +79,5 @@ The data is saved in its original JSON format in Snowflake and through SQL is pr
 
 ## Data Consumption
 Once data is in Snowflake it can be consumed with any of the native connectors that Snowflake offers. 
+
+![img](https://github.com/mariusndini/img/blob/master/HealthiOSBridge_2.png)

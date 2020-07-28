@@ -1,7 +1,7 @@
 ﻿var config = {
     "amazon":{
-    "UserPoolId": "USER_POOL_ID",
-        "ClientId": "CLIENT_ID"
+    "UserPoolId": "us-east-2_7EEHLBK1g",
+        "ClientId": "s3ofc9fgi83k8mnlce3lt0e5v"
     },
     "kinesis":{
         "region": "us-east-1",
