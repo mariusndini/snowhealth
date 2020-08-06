@@ -373,7 +373,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.5;
+				MARKETING_VERSION = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -396,7 +396,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.5;
+				MARKETING_VERSION = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = project.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_VERSION = 5.0;
