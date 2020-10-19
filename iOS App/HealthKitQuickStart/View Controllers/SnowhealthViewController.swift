@@ -88,6 +88,7 @@ class SnowhealthViewController: UIViewController {
     dateComponent.day = 1
     let futureDate = Calendar.current.date(byAdding: dateComponent, to: enddate.date)
     com = Calendar.current.dateComponents([.year, .month, .day], from: futureDate!)
+
     
     if let day = com.day, let month = com.month, let year = com.year {
         end = "\(year)/\(month)/\(day) 23.59"
@@ -129,6 +130,7 @@ class SnowhealthViewController: UIViewController {
     for date in stride(from: startdate.date, to: futureDate!, by: dayDurationInSeconds) {
       var runDate = ""
       com = Calendar.current.dateComponents([.year, .month, .day], from: date)
+      
       if let day = com.day, let month = com.month, let year = com.year {
           runDate = "\(year)/\(month)/\(day)"
       }

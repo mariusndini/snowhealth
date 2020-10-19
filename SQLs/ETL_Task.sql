@@ -1,8 +1,17 @@
-CREATE or replace PROCEDURE HEALTHKIT.HK.HEALTH_TABLES_SPROC()
+  
+  CREATE or replace PROCEDURE SNOWHEALTH.HK.HEALTH_TABLES_SPROC()
   RETURNS BOOLEAN
   LANGUAGE javascript
+  EXECUTE AS OWNER
  AS
   $$
+  
+  var load = snowflake.execute( { sqlText:
+  `copy into SNOWHEALTH.PUBLIC.HEALTHKIT_IMPORT
+    from @SNOWHEALTH.PUBLIC.SNOWHEALTHS3
+    FILE_FORMAT = (TYPE = JSON);` })
+  
+  
   var rs = snowflake.execute( { sqlText: 
       `CREATE OR REPLACE TABLE HK.DATE_DIM (
          DATE             DATE        NOT NULL
@@ -68,12 +77,12 @@ rs = snowflake.execute( { sqlText:
             RECORD:bloodstype::STRING as BLOODTYPE,
             RECORD:gender::STRING as GENDER,
             RECORD:loaddate::TIMESTAMP AS LOADTIME
-          FROM "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT" HKI
+          FROM "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT" HKI
           INNER JOIN 
             (select 
                 RECORD:identifier::STRING  AS ID, 
                 MAX(RECORD:loaddate)::TIMESTAMP AS LOADTIME
-            from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+            from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
             group by 1) U ON ID = U.ID AND RECORD:loaddate = U.LOADTIME 
           group by 1, 2, 3, 4, 5
         );`} );
@@ -82,8 +91,8 @@ rs = snowflake.execute( { sqlText:
       rs = snowflake.execute( { sqlText: 
       `CREATE OR REPLACE TABLE HK.DATED_POP AS (
           select  ID, DATE
-          FROM "HEALTHKIT"."HK"."POPULATION",
-               "HEALTHKIT"."HK"."DATE_DIM"
+          FROM "SNOWHEALTH"."HK"."POPULATION",
+               "SNOWHEALTH"."HK"."DATE_DIM"
           group by 1, 2
           order by id, date
         );`} );
@@ -91,8 +100,8 @@ rs = snowflake.execute( { sqlText:
       rs = snowflake.execute( { sqlText: 
       `CREATE OR REPLACE TABLE HK.HOURS_POP AS (
           select  ID, DATE
-          FROM "HEALTHKIT"."HK"."POPULATION",
-              "HEALTHKIT"."HK"."HOUR_DIM"
+          FROM "SNOWHEALTH"."HK"."POPULATION",
+              "SNOWHEALTH"."HK"."HOUR_DIM"
           group by 1, 2
           order by id, date
         );`} );
@@ -118,7 +127,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:ActiveEnergyBurned))
 
   order by 1, 2
@@ -143,7 +152,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:AppleStandTime))
   
   order by 1, 2
@@ -168,7 +177,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:BasalEnergyBurned))
 
   order by 1, 2
@@ -193,7 +202,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:FlightsClimbed))
 
   order by 1, 2
@@ -218,7 +227,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:StepCount))
 
   order by 1, 2
@@ -243,7 +252,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:HeartRate))
 
   order by 1, 2
@@ -268,7 +277,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:HeartRateVariabilitySDNN))
 
   order by 1, 2
@@ -310,7 +319,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietarySugar))
 
   
@@ -352,7 +361,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietarySodium))
 
   
@@ -394,7 +403,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryProtein))
 
   
@@ -436,7 +445,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryFatTotal))
 
   
@@ -478,7 +487,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryFatSaturated))
 
   
@@ -520,7 +529,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryFatPolyunsaturated))
 
   
@@ -562,7 +571,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryFatMonounsaturated))
 
   
@@ -604,7 +613,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryEnergyConsumed))
 
   
@@ -646,7 +655,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryCholesterol))
 
   
@@ -688,7 +697,7 @@ rs = snowflake.execute( { sqlText:
     PARSE_JSON(REPLACE('{"'||replace(replace(ARRAY_TO_STRING(split(right(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|'), 
         len(ARRAY_TO_STRING(split(split(split(value, '{')[1],'}')[0]::STRING,'    '),'|')) -1),'|'),'|'),' ',''),':','":"')||'"}','|','","')):HKFoodUSDANumber::STRING as FoodUSDANumber
         
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:DietaryCarbohydrates))
 
   
@@ -707,7 +716,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[6]::STRING  AS DEVICE,
     split(value, ' ')[14]::STRING as ExternalUUID
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT"
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT"
   ,table(flatten(input => RECORD:BodyMass))
   
   order by 1, 2
@@ -733,7 +742,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:DistanceWalkingRunning))
 
   order by 1, 2
@@ -758,7 +767,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:EnvironmentalAudioExposure))
 
   order by 1, 2
@@ -783,7 +792,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:HeadphoneAudioExposure))
 
   order by 1, 2
@@ -809,7 +818,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:RestingHeartRate))
 
   order by 1, 2
@@ -834,7 +843,7 @@ rs = snowflake.execute( { sqlText:
     split(value, ' ')[3] || ' ' || split(value, ' ')[4] AS APP,
     (split(value, ' ')[6] || ' ' || split(value, ' ')[5])::STRING  AS DEVICE
 
-  from "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT",
+  from "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT",
         table(flatten(input => RECORD:WalkingHeartRateAverage))
 
   order by 1, 2
@@ -880,71 +889,71 @@ rs = snowflake.execute( { sqlText:
           
           ,current_timestamp as RUN_DATE
         
-          from "HEALTHKIT"."HK"."DATED_POP" DP 
-              LEFT JOIN "HEALTHKIT"."HK"."POPULATION" POP ON DP.ID = POP.ID
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."ACTIVE_ENERGY_BURNED" group by 1,2,4) AEB ON DP.ID = AEB.ID AND DP.DATE = AEB.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."APPLESTANDTIME" group by 1,2,4) AST ON DP.ID = AST.ID AND DP.DATE = AST.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."BASALENERGYBURNED" group by 1,2,4) BEB ON DP.ID = BEB.ID AND DP.DATE = BEB.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."CARBS" group by 1,2,4) CARBS ON DP.ID = CARBS.ID AND DP.DATE = CARBS.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."CHOLESTEROL" group by 1,2,4) CSTRL ON DP.ID = CSTRL.ID AND DP.DATE = CSTRL.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."DIETARYENERGY" group by 1,2,4) DE ON DP.ID = DE.ID AND DP.DATE = DE.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."FATMONO" group by 1,2,4) FM ON DP.ID = FM.ID AND DP.DATE = FM.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."FATPOLY" group by 1,2,4) FP ON DP.ID = FP.ID AND DP.DATE = FP.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."FATSAT" group by 1,2,4) FS ON DP.ID = FS.ID AND DP.DATE = FS.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."FATTOTAL" group by 1,2,4) FT ON DP.ID = FT.ID AND DP.DATE = FT.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."FLIGHTSCLIMBED" group by 1,2,4) FC ON DP.ID = FC.ID AND DP.DATE = FC.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."PROTEIN" group by 1,2,4) PRO ON DP.ID = PRO.ID AND DP.DATE = PRO.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."SODIUM" group by 1,2,4) SOD ON DP.ID = SOD.ID AND DP.DATE = SOD.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."STEPCOUNT" group by 1,2,4) STEPS ON DP.ID = STEPS.ID AND DP.DATE = STEPS.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."SUGAR" group by 1,2,4) SUG ON DP.ID = SUG.ID AND DP.DATE = SUG.DATE
-              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "HEALTHKIT"."HK"."WALKRUNDISTANCE" group by 1,2,4) WRD ON DP.ID = WRD.ID AND DP.DATE = WRD.DATE
+          from "SNOWHEALTH"."HK"."DATED_POP" DP 
+              LEFT JOIN "SNOWHEALTH"."HK"."POPULATION" POP ON DP.ID = POP.ID
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."ACTIVE_ENERGY_BURNED" group by 1,2,4) AEB ON DP.ID = AEB.ID AND DP.DATE = AEB.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."APPLESTANDTIME" group by 1,2,4) AST ON DP.ID = AST.ID AND DP.DATE = AST.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."BASALENERGYBURNED" group by 1,2,4) BEB ON DP.ID = BEB.ID AND DP.DATE = BEB.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."CARBS" group by 1,2,4) CARBS ON DP.ID = CARBS.ID AND DP.DATE = CARBS.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."CHOLESTEROL" group by 1,2,4) CSTRL ON DP.ID = CSTRL.ID AND DP.DATE = CSTRL.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."DIETARYENERGY" group by 1,2,4) DE ON DP.ID = DE.ID AND DP.DATE = DE.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."FATMONO" group by 1,2,4) FM ON DP.ID = FM.ID AND DP.DATE = FM.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."FATPOLY" group by 1,2,4) FP ON DP.ID = FP.ID AND DP.DATE = FP.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."FATSAT" group by 1,2,4) FS ON DP.ID = FS.ID AND DP.DATE = FS.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."FATTOTAL" group by 1,2,4) FT ON DP.ID = FT.ID AND DP.DATE = FT.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."FLIGHTSCLIMBED" group by 1,2,4) FC ON DP.ID = FC.ID AND DP.DATE = FC.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."PROTEIN" group by 1,2,4) PRO ON DP.ID = PRO.ID AND DP.DATE = PRO.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."SODIUM" group by 1,2,4) SOD ON DP.ID = SOD.ID AND DP.DATE = SOD.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."STEPCOUNT" group by 1,2,4) STEPS ON DP.ID = STEPS.ID AND DP.DATE = STEPS.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."SUGAR" group by 1,2,4) SUG ON DP.ID = SUG.ID AND DP.DATE = SUG.DATE
+              LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."WALKRUNDISTANCE" group by 1,2,4) WRD ON DP.ID = WRD.ID AND DP.DATE = WRD.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::STRING||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, IFF((VALUE is not null), value::STRING,'') as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."HEARTRATE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."HEARTRATE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                           ) group by ID, date_trunc('day',STARTTIME)) HRTRT ON HRTRT.ID=DP.ID AND HRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "HEALTHKIT"."HK"."RESTINGHEARTRATE")
+                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."RESTINGHEARTRATE")
                           group by ID, date_trunc('day',STARTTIME) ) RHRTRT ON RHRTRT.ID=DP.ID AND RHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "HEALTHKIT"."HK"."HEARTRATESDNN")
+                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEARTRATESDNN")
                           group by ID, date_trunc('day',STARTTIME) ) SDNNHRTRT ON SDNNHRTRT.ID=DP.ID AND SDNNHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "HEALTHKIT"."HK"."WALKINGHEARTAVG")
+                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."WALKINGHEARTAVG")
                           group by ID, date_trunc('day',STARTTIME) ) WHRTRT ON WHRTRT.ID=DP.ID AND WHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."APPLESTANDTIME" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."APPLESTANDTIME" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME)) TAST ON TAST.ID=DP.ID AND TAST.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "HEALTHKIT"."HK"."ENVIRONMENTAUDIO")
+                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."ENVIRONMENTAUDIO")
                           group by ID, date_trunc('day',STARTTIME) ) ENAUDIO ON ENAUDIO.ID=DP.ID AND ENAUDIO.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "HEALTHKIT"."HK"."HEAPHONEAUDIO")
+                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEAPHONEAUDIO")
                           group by ID, date_trunc('day',STARTTIME) ) HPAUDIO ON HPAUDIO.ID=DP.ID AND HPAUDIO.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."FLIGHTSCLIMBED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."FLIGHTSCLIMBED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) FCDETAIL ON FCDETAIL.ID=DP.ID AND FCDETAIL.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."WALKRUNDISTANCE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."WALKRUNDISTANCE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) WRDIST ON WRDIST.ID=DP.ID AND WRDIST.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."STEPCOUNT" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."STEPCOUNT" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME)) STEPSDET ON STEPSDET.ID=DP.ID AND STEPSDET.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."ACTIVE_ENERGY_BURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."ACTIVE_ENERGY_BURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) AEBDET ON AEBDET.ID=DP.ID AND AEBDET.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
                           from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
-                                FROM "HEALTHKIT"."HK"."HOURS_POP" B LEFT OUTER JOIN  "HEALTHKIT"."HK"."BASALENERGYBURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
+                                FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."BASALENERGYBURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) BASALDET ON BASALDET.ID=DP.ID AND BASALDET.DATE = DP.DATE
                           
@@ -952,28 +961,50 @@ rs = snowflake.execute( { sqlText:
       );`} );
 //--------------------------------------------------------
       rs = snowflake.execute( { sqlText: 
-      `ALTER TABLE "HEALTHKIT"."HK"."POP_AGG" SWAP WITH "HEALTHKIT"."HK"."POP_AGG2";
+      `ALTER TABLE "SNOWHEALTH"."HK"."POP_AGG" SWAP WITH "SNOWHEALTH"."HK"."POP_AGG2";
 `} );
 //--------------------------------------------------------
       rs = snowflake.execute( { sqlText: 
-      `DROP TABLE "HEALTHKIT"."HK"."POP_AGG2";`} );
+      `DROP TABLE "SNOWHEALTH"."HK"."POP_AGG2";`} );
 //--------------------------------------------------------
       rs = snowflake.execute( { sqlText: 
-      `GRANT SELECT ON ALL TABLES IN SCHEMA "HEALTHKIT"."HK" TO ROLE HEALTHKITSERVICE;`} );
+      `GRANT SELECT ON ALL TABLES IN SCHEMA "SNOWHEALTH"."HK" TO ROLE HEALTHKITSERVICE;`} );
 //--------------------------------------------------------
-      rs = snowflake.execute( { sqlText: 
-      `CREATE OR REPLACE STREAM HEALTHKIT.HK.HEALTH_STREAM ON TABLE "HEALTHKIT"."PUBLIC"."HEALTHKIT_IMPORT";`} );
-       
-  return 'Done.';
+      rs = snowflake.execute( { sqlText: `CREATE OR REPLACE STREAM SNOWHEALTH.HK.HEALTH_STREAM ON TABLE "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT";`} );
+
+//--------------------- ENABLE SHARE OF DATA TO EXCHANGE (share previously created) -----------------------------------
+      rs = snowflake.execute( { sqlText: `GRANT USAGE ON DATABASE "SNOWHEALTH" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT USAGE ON SCHEMA "SNOWHEALTH"."PUBLIC" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."ACTIVE_ENERGY_BURNED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."WEIGHT" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."WALKRUNDISTANCE" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."WALKINGHEARTAVG" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."SUGAR" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."STEPCOUNT" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."SODIUM" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."RESTINGHEARTRATE" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."PROTEIN" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."POP_AGG" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."POPULATION" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HOUR_DIM" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HOURS_POP" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HEARTRATESDNN" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HEARTRATE" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HEAPHONEAUDIO" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."FLIGHTSCLIMBED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."FATTOTAL" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."FATSAT" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."FATPOLY" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."FATMONO" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."ENVIRONMENTAUDIO" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."DIETARYENERGY" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."DATE_DIM" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."DATED_POP" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."CHOLESTEROL" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."CARBS" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."BASALENERGYBURNED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."APPLESTANDTIME" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
+
+      return 'Done';
   $$;
-
-
-ALTER TASK HEALTHKIT.HK.HEALTH_TABLES_PROCESS RESUME;
-
-CREATE OR REPLACE TASK HEALTHKIT.HK.HEALTH_TABLES_PROCESS
-    WAREHOUSE = HEALTH_WH
-    SCHEDULE = '1 minute'
-WHEN
-    SYSTEM$STREAM_HAS_DATA('"HEALTHKIT"."HK"."HEALTH_STREAM"')
-AS
-    call HEALTHKIT.HK.HEALTH_TABLES_SPROC();

@@ -88,10 +88,10 @@ class DataSend{
      let formatter = DateFormatter()
      formatter.dateFormat = "yyyy/MM/dd"
      let endTime = formatter.date(from: date)!
-    
+      
      let daysAgo = NSCalendar.current.date(byAdding: .day, value: -1, to: endTime)
      let pred = HKQuery.predicateForSamples(withStart: daysAgo, end: endTime, options: [])
-     
+
      let query = HKSampleQuery(sampleType: id, predicate: pred, limit: 0, sortDescriptors: .none) {
          (sampleQuery, results, error) -> Void in
          if let result = results {
@@ -131,7 +131,7 @@ class DataSend{
         print(String(describing: error))
         return
       }
-      print("Sent - Resp: \(String(data: data, encoding: .utf8)!)")
+      //print("Sent - Resp: \(String(data: data, encoding: .utf8)!)")
       
       globals.postcount = globals.postcount + 1
       semaphore.signal()
