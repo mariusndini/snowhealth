@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Health App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./libs/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="./libs/bootstrap-4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./libs/bootstrap-4.4.1/css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="./libs/owl-carousel/css/owl.css">
+  <link rel="stylesheet" href="./libs/charts/css/chart.min.css">
+  <link rel="stylesheet" href="./libs/owl-carousel/css/owl-theme.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./libs/jquery-3.4.1/jquery.min.js"></script>
+  <script src='./libs/charts/js/chart.min.js'></script>
+  <script src='./libs/font-awesome/js/fontawesome.min.js'></script>
+  <script src="./libs/bootstrap-4.4.1/js/bootstrap-datepicker.min.js"></script>
+  <script src="./libs/bootstrap-4.4.1/js/bootstrap.min.js"></script>
+  <script src="./libs/sammy/sammy.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./libs/owl-carousel/js/owl.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/functions.js"></script> 
+  <script src="./js/app.js"></script>
+  <style>
+  .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+    /* Style buttons */
+  .btn_down {
+    max-height: 38px;
+    margin-bottom: 16px;
+    margin-top: 10px;
+    background-color: #1474be;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  @media(max-width: 1280px)
+  {
+    .btn_down
+    {
+      display:none;
+    }
+  }
+  /* Darker background on mouse-over */
+  .btn_down:hover {
+    background-color: RoyalBlue;
+  }
+  .modal-dialog.full {
+  width: 98%;
+  height: 90%;
+  padding: 0;
+}
+
+.modal-content.full {
+  height: 99%;
+}
+  </style>
+</head>
+<body>
+  <script type="text/javascript" >
+  var picked_date=undefined;
+  document.ontouchmove = function(event){
+    event.preventDefault();
+}
+  $(document).ready(function() {
+  var vanillacalendar = {
+  month: document.querySelectorAll('[data-calendar-area="month"]')[0],
+  next: document.querySelectorAll('[data-calendar-toggle="next"]')[0],
+  previous: document.querySelectorAll('[data-calendar-toggle="previous"]')[0],
+  label: document.querySelectorAll('[data-calendar-label="month"]')[0],
+  activeDates: null,
+  date: new Date(),
+  todaysDate: new Date(),
+
+  init: function () {
+    this.date.setDate(1)
+    this.createMonth()
+    this.createListeners()
+  },
+
+  createListeners: function () {
+    var _this = this
+    this.next.addEventListener('click', function () {
+      _this.clearCalendar()
+      var nextMonth = _this.date.getMonth() + 1
+      _this.date.setMonth(nextMonth)
+      _this.createMonth();
+      if( /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        $("#calendar_body").owlCarousel({
+          items: 31,
+          itemsMobile: [479,7]
+
+        });
+      }
+    })
+    // Clears the calendar and shows the previous month
+    this.previous.addEventListener('click', function () {
+      _this.clearCalendar()
+      var prevMonth = _this.date.getMonth() - 1
+      _this.date.setMonth(prevMonth)
+      _this.createMonth();
+      if( /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        $("#calendar_body").owlCarousel({
+          items: 31,
+          itemsMobile: [479,7]
+
+        });
+      }
+    })
+  },
+
+  createDay: function (num, day, year) {
+    var newDay = document.createElement('div')
+    var dateEl = document.createElement('span')
+    dateEl.innerHTML = num
+    newDay.className = 'cal__date'
+    newDay.setAttribute('data-calendar-date', this.date.toDateString())
+
+    if (num === 1) {
+      var offset = ((day - 1) * 14.28)
+      if (offset > 0) {
+    //    newDay.style.marginLeft = offset + '%'
+      }
+    }
+    //deactivate first condition
+    if (this.date.getTime() <= this.todaysDate.getTime() - 1 && 1==2) {
+      newDay.classList.add('cal__date--disabled')
+    } else {
+      newDay.classList.add('cal__date--active')
+      newDay.setAttribute('data-calendar-status', 'active')
+    }
+
+    if (this.date.toDateString() === this.todaysDate.toDateString()) {
+      newDay.classList.add('cal__date--today')
+    }
+
+    newDay.appendChild(dateEl)
+    this.month.appendChild(newDay)
+  },
+
+  dateClicked: function () {
+    var _this = this
+    this.activeDates = document.querySelectorAll('[data-calendar-status="active"]')
+    for (var i = 0; i < this.activeDates.length; i++) {
+      this.activeDates[i].addEventListener('click', function (event) {
+        var picked = document.querySelectorAll('[data-calendar-label="picked"]')[0]
+        picked.innerHTML = this.dataset.calendarDate;
+        picked_date=new Date(this.dataset.calendarDate);
+        var isoDate = new Date(picked_date.getTime() - (picked_date.getTimezoneOffset() * 60000)).toISOString();
+        _this.removeActiveClass()
+        this.classList.add('cal__date--selected');
+             var id = $("#pininput").val();
+     if(picked_date != undefined){
+        $("#selected_date").html(picked_date.toDateString());
+        window.history.pushState('profile', 'Profile', '#/pin/'+$("#pininput").val()+'/date/'+isoDate.split("T")[0]);
+     }
+     $("#username").html(id+" - ");
+     if(id==""){
+        alert("Insert a Pin!");
+     }else{
+    //  get_data();
+     }
+      })
+    }
+  },
+
+  createMonth: function () {
+    var currentMonth = this.date.getMonth()
+    while (this.date.getMonth() === currentMonth) {
+      this.createDay(this.date.getDate(), this.date.getDay(), this.date.getFullYear())
+      this.date.setDate(this.date.getDate() + 1)
+    }
+    // while loop trips over and day is at 30/31, bring it back
+    this.date.setDate(1)
+    this.date.setMonth(this.date.getMonth() - 1)
+
+    this.label.innerHTML = this.monthsAsString(this.date.getMonth()) + ' ' + this.date.getFullYear()
+    this.dateClicked()
+  },
+
+  monthsAsString: function (monthIndex) {
+    return [
+      'January',
+      'Febuary',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ][monthIndex]
+  },
+
+  clearCalendar: function () {
+    vanillacalendar.month.innerHTML = ''
+  },
+
+  removeActiveClass: function () {
+    for (var i = 0; i < this.activeDates.length; i++) {
+      this.activeDates[i].classList.remove('cal__date--selected')
+    }
+  }
+}
+
+
+
+    $("#owl-example").owlCarousel();
+    $("#activity-carousel").owlCarousel({
+      itemsMobile: [479,1],
+    });
+    $("#heart_chart").owlCarousel({
+      itemsMobile: [479,1],
+      items: 3
+    });
+    $("#cont_env_chart").owlCarousel({
+      itemsMobile: [479,1],
+      items: 3
+    });
+    $("#energy_chart").owlCarousel({
+      itemsMobile: [479,1],
+      items: 3
+    });
+    $("#bar_charts").owlCarousel({
+      itemsMobile: [479,1],
+      items: 3
+    });
+    $("#searchbtn").click(function(){
+     var id = $("#pininput").val();
+     if(picked_date != undefined){
+        $("#selected_date").html(picked_date.toDateString());
+     }
+     $("#username").html(id+" - ");
+     if(id==""){
+        alert("Insert a Pin!");
+     }else{
+      get_data();
+     }
+});
+    $("#pininput").change(function(){
+      if(picked_date){
+        var isoDate = new Date(picked_date.getTime() - (picked_date.getTimezoneOffset() * 60000)).toISOString();
+        window.history.pushState('profile', 'Profile', '#/pin/'+$("#pininput").val()+'/date/'+isoDate.split("T")[0]);
+      }else{
+        window.history.pushState('profile', 'Profile', '#/pin/'+$("#pininput").val());
+      }
+});
+    // INITIALIZE DATEPICKER PLUGIN
+    $('.datepicker_download').datepicker({
+        clearBtn: true,
+        format: "yyyy-mm-dd"
+    });
+
+    $('#general_all').on('click', function () {
+      var all_check=document.getElementsByClassName("general_check");
+        if(this.checked){
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=true;
+          }
+        }else{
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=false;
+          }          
+        }
+    });
+    $('#activity_all').on('click', function () {
+      var all_check=document.getElementsByClassName("acitivity_check");
+        if(this.checked){
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=true;
+          }
+        }else{
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=false;
+          }          
+        }
+    });
+    $('#macros_all').on('click', function () {
+      var all_check=document.getElementsByClassName("macros_check");
+        if(this.checked){
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=true;
+          }
+        }else{
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=false;
+          }          
+        }
+    });
+    $('#minerals_all').on('click', function () {
+      var all_check=document.getElementsByClassName("minerals_check");
+        if(this.checked){
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=true;
+          }
+        }else{
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=false;
+          }          
+        }
+    });
+    $('#fat_all').on('click', function () {
+      var all_check=document.getElementsByClassName("fat_check");
+        if(this.checked){
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=true;
+          }
+        }else{
+          for (var i = 0; i < all_check.length; i++) {
+            all_check[i].checked=false;
+          }          
+        }
+    });
+    $('#download_csv').on('click', function () {
+        var start_date = $('#startDate').val();
+        var end_date = $('#endDate').val();
+        var id = $("#pininput").val();
+        var columns=getCheckedBoxes("column");
+        var sql="";
+        if (id=="") {
+            alert("Insert User ID!");
+        }else{
+          if (columns==null) {
+              alert("Select at least one data to download");
+          }else{
+            if (start_date=="") {
+              alert("Select the start date");
+            }else{
+              if (new Date(end_date)<=new Date(start_date)) {
+                  alert("End Date Should be after start date!");
+              }else{
+                  if (end_date=="") {
+                      sql=`"select * from HEALTHKIT.HK.POP_AGG where id ='`+id+`' and date>='`+start_date+`'"`;
+                  }else{
+                      sql=`"select * from HEALTHKIT.HK.POP_AGG where id ='`+id+`' and date>='`+start_date+`' and date<='`+end_date+`'"`;
+                  }
+                  execute_select_query(sql,columns);
+              }
+            }
+          }
+        }
+    });
+  vanillacalendar.init({});
+  if( /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+    $("#calendar_body").owlCarousel({
+      items: 31,
+      itemsMobile: [479,7]
+
+    });
+    }
+  });
+  </script>
+<nav class="navbar fixed-top bg-dark navbar-dark">
+  <div style="color: white; width: 100%; text-align: center;"><a class="navbar-brand" href="#"><span id="username"></span> Health App</a>
+<br><span style="font-size: 16px" data-calendar-label="picked" id="selected_date"></span>
+  </div>
+</nav>
+<div >
+</div>
+<div class="container">
+  <div class="row mb-3">
+     <input type="text" class="form-control datepicker" placeholder="Pin" id="pininput" required="true" size="15">
+     <button type="button" id="searchbtn" class="btn btn-primary ml-2"><i class="fa fa-search"></i> Search</button>
+     <button class="btn btn_down btn-primary ml-2" data-toggle="modal" data-target="#downloadDialog"><i class="fa fa-download"></i> Download</button> 
+  </div>
+  <div class="row">
+     <div class="col-sm-4">
+      <div class="cal bg-dark">
+      <div class="cal__header">
+        <button class="btn btn-action btn-link btn-lg" data-calendar-toggle="previous"><svg height="24" version="1.1" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"></path></svg></button>
+        <div class="cal__header__label" data-calendar-label="month">
+          March 2017
+        </div><button class="btn btn-action btn-link btn-lg" data-calendar-toggle="next"> <svg height="24" version="1.1" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"></path></svg></button>
+      </div>
+      <!--
+      <div class="cal__week">
+        <span>Mon</span> <span>Tue</span><span>Wed</span> <span>Thu</span> <span>Fri</span> <span>Sat</span> <span>Sun</span>
+      </div> -->
+      <div class="cal__body bg-dark-medium" id="calendar_body" data-calendar-area="month"></div>
+    </div>
+  </div>
+      <div class="col-sm-8 panel_dark" style="display: none" id="prime_chart">
+        <canvas id="calories_chart" style="display: none" width="400" height="200"></canvas>
+      </div>
+    <div class="col-sm-12" id="rows-container">
+      <div class="row">
+        <div class="col-sm-12">
+           <div class="jumbotron panel">
+                 <div class="row">
+          <div class="col-sm-6 diet_col">
+    <table class="table jumbo_table table-striped">
+        <thead>
+    <tr>
+      <th><h3>General 
+  <!--<i data-toggle="collapse" data-target="#demo" id="general" class="pl-2 change-icon fas fa-arrow-up"></i>-->
+</h3></th>
+<th></th>
+<th></th>
+    </tr>
+  </thead>
+    <tbody class="collapse show" id="">
+      <tr class="generic_row">
+        <td>Age</td>
+        <td></td>
+        <td id="age">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td>Gender</td>
+        <td></td>
+        <td id="gender">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td >Bloodtype</td>
+        <td></td>
+        <td id="bloodtype">N/A</td>
+      </tr>
+    </tbody>
+  </table>
+</div>  
+<div class="col-sm-6 diet_col">
+    <table class="table jumbo_table table-striped">
+        <thead>
+    <tr>
+      <th><h3>Activity</h3></th>
+<th></th>
+<th></th>
+    </tr>
+  </thead>
+    <tbody>
+      <tr class="generic_row">
+        <td> <div>
+               <img class="activity-img" width="35px" data-toggle="modal" data-target="#energyburned_modal" src="./images/Energy-Burned-icon.png" /><span>Active Calories Burned</span></div></td>
+        <td></td>
+        <td id="energyburned">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td>      <div>
+                <img class="activity-img" width="35px" data-toggle="modal" data-target="#basalenergy_modal" src="./images/Basal-Energy-icon.png"></img><span>Basal Calories Burned</span></div></td>
+        <td></td>
+        <td id="basalenergyburned">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td ><div><img class="activity-img" width="35px" data-toggle="modal" data-target="#applestands_modal" src="./images/Apple-Stands-icon.png"></img><span>Stand Time</span></div></td>
+        <td></td>
+        <td id="applestands">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td ><div class="p-2"><img class="activity-img" width="35px" data-toggle="modal" data-target="#flightsclimbed_modal" src="./images/Flights-Climbed-icon.png"></img><span>Flights Climbed</span></div></td>
+        <td></td>
+        <td id="flightsclimbed">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td><div><img class="activity-img" width="35px" data-toggle="modal" data-target="#steps_modal" src="./images/Steps-icon.png"></img><span>Steps</span></div></td>
+        <td></td>
+        <td id="stepscount"></td>
+      </tr>
+      <tr class="generic_row">
+        <td><div><img class="activity-img" width="35px" data-toggle="modal" data-target="#walkrun_modal" src="./images/Walk-Run-icon.png"></img><span>Walk Run</span></div></td>
+        <td></td>
+        <td id="walkrun_meters"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+      </div>
+<div id="owl-example" class="owl-carousel">
+  <div class="row">
+    <div class="col-sm-4 diet_col">
+    <table class="table jumbo_table table-striped">
+         <thead>
+    <tr>
+      <th><h3>Macros</h3></th>
+<th></th>
+<th></th>
+    </tr>
+  </thead>
+    <tbody>
+      <tr id="proteins_row">
+        <td>Proteins</td>
+        <td id="prot_gr">N/A</td>
+        <td id="prot_cal">N/A</td>
+      </tr>
+      <tr id="carbs_row">
+        <td id="carb_lb">Carbs</td>
+        <td id="carb_gr">N/A</td>
+        <td id="carb_cal">N/A</td>
+      </tr>
+      <tr id="fat_row">
+        <td id="fat_lb">Fat</td>
+        <td id="fat_gr">N/A</td>
+        <td id="fat_cal">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td id="total_lb">Total</td>
+        <td id="total_gr">N/A</td>
+        <td id="total_cal">N/A</td>
+      </tr>
+        <tr class="generic_row">
+        <td id="total_burned_lb">Total Burned</td>
+        <td id="total_burned_gr"> </td>
+        <td id="total_burned_cal">N/A</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+  <div class="col-sm-4 diet_col">
+    <table class="table jumbo_table table-striped">
+           <thead>
+    <tr>
+      <th><h3>Minerals</h3></th>
+<th></th>
+<th></th>
+    </tr>
+  </thead>
+    <tbody>
+            <tr class="generic_row">
+        <td id="sodium_lb">Sodium</td>
+        <td id="sodium_cal"></td>
+         <td id="sodium_gr">N/A</td>
+      </tr>
+            <tr class="generic_row">
+        <td id="chol_lb">Cholesterol</td>
+        <td id="chol_cal"></td>
+        <td id="chol_gr">N/A</td>
+      </tr>
+            <tr class="generic_row">
+        <td id="sug_lb">Sugar</td>
+         <td id="sug_cal"></td>
+                 <td id="sug_gr">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td id="chol_lb1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_cal1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_gr1"><span style="visibility:hidden;">.</span></td>
+      </tr>
+            <tr class="generic_row">
+        <td id="chol_lb1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_cal1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_gr1"><span style="visibility:hidden;">.</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="col-sm-4 diet_col">
+    <table class="table jumbo_table table-striped">
+        <thead>
+    <tr>
+      <th><h3>Fat Composition</h3></th>
+<th></th>
+<th></th>
+    </tr>
+  </thead>
+    <tbody>
+      <tr class="generic_row">
+        <td id="fatsat_lb">Saturated</td>
+        <td id="fatsat_gr">N/A</td>
+        <td id="fatsat_cal">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td id="fatpoly_lb">Polyunsaturated</td>
+        <td id="fatpoly_gr">N/A</td>
+        <td id="fatpoly_cal">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td id="fatmono_lb">Monounsaturated</td>
+        <td id="fatmono_gr">N/A</td>
+        <td id="fatmono_cal">N/A</td>
+      </tr>
+      <tr class="generic_row">
+        <td id="fattotal_lb">Total</td>
+        <td id="fattotal_gr">N/A</td>
+        <td id="fattotal_cal">N/A</td>
+      </tr>
+            <tr class="generic_row">
+        <td id="chol_lb1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_cal1"><span style="visibility:hidden;">.</span></td>
+        <td id="chol_gr1"><span style="visibility:hidden;">.</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<!--
+  <div> </div>
+  <div> </div> -->
+</div>
+  <div class="row">
+
+</div>
+        </div>
+            <!--
+        <div class="panel">
+         <h3 class="p-2 pl-3 pt-4">Activity</h3>
+           <div id="activity-carousel" class="pl-0 pt-0 jumbotron panel">
+             <div class="activity-item">
+              <div class="p-2">
+               <img class="activity-img" width="35px" data-toggle="modal" data-target="#energyburned_modal" src="./images/Energy-Burned-icon.png" /><span>Active Energy Burned</span><span class="text-lg-right" id="energyburned" style="float: right;">N/A</span></div>
+                <div class="p-2">
+                <img class="activity-img" width="35px" data-toggle="modal" data-target="#basalenergy_modal" src="./images/Basal-Energy-icon.png"></img><span>Basal Energy Burned</span><span class="text-lg-right" id="basalenergyburned" style="float: right;">N/A</span></div>
+                <div class="p-2"><img class="activity-img" width="35px" data-toggle="modal" data-target="#applestands_modal" src="./images/Apple-Stands-icon.png"></img><span>Stand Time</span><span class="text-lg-right" id="applestands" style="float: right;">N/A</span></div>
+                <div class="p-2"><img class="activity-img" width="35px" data-toggle="modal" data-target="#flightsclimbed_modal" src="./images/Flights-Climbed-icon.png"></img><span>Flights Climbed</span><span class="text-lg-right" id="flightsclimbed" style="float: right;">N/A</span></div>
+                <div class="p-2"><img class="activity-img" width="35px" data-toggle="modal" data-target="#steps_modal" src="./images/Steps-icon.png"></img><span>Steps</span><span class="text-lg-right" id="stepscount" style="float: right;">N/A</span></div>
+                <div class="p-2"><img class="activity-img" width="35px" data-toggle="modal" data-target="#walkrun_modal" src="./images/Walk-Run-icon.png"></img><span>Walk Run</span><span class="text-lg-right" id="walkrun_meters" style="float: right;">N/A</span></div>
+             </div> 
+           </div>
+      </div>
+      -->
+    </div>
+
+    <div class="col-sm-12 panel_dark mt-2" id="heart_chart">
+     <div><div style="text-align: center; width: 100%;" id="hchart_msg"></div><canvas id="heart_rate_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="hchart_msg3"></div><canvas id="walk_heart_rate_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="hchart_msg1"></div><canvas id="rest_heart_rate_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="hchart_msg2"></div><canvas id="sdnn_heart_rate_chart" style="display: none" width="400" height="400"></canvas></div>
+      </div>
+    <div class="col-sm-12 panel_dark mt-2" id="cont_env_chart">
+     <div><div style="text-align: center; width: 100%;" id="env_msg"></div><canvas id="env_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="headphone_msg"></div><canvas id="headphone_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div></div>
+      </div>
+                <div class="col-sm-12 panel_dark mt-2" id="bar_charts">
+        <div><div style="text-align: center; width: 100%;" id="steps_msg"></div><canvas id="steps_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="flightsclimbed_msg"></div><canvas id="flightsclimbed_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="walkrun_msg"></div><canvas id="walkrun_chart" style="display: none" width="400" height="400"></canvas></div>
+      </div>
+          <div class="col-sm-12 panel_dark mt-2" id="energy_chart">
+     <div><div style="text-align: center; width: 100%;" id="active_en_msg"></div><canvas id="active_en_chart" style="display: none" width="400" height="400"></canvas></div>
+     <div><div style="text-align: center; width: 100%;" id="basal_en_msg"></div><canvas id="basal_en_chart" style="display: none" width="400" height="400"></canvas></div>
+      <div></div>
+      </div>
+
+    </div>
+
+<div class="row">
+  <div class="col">
+    
+  </div>
+  <div class="col">
+    
+  </div>
+  <div class="col">
+    
+  </div>
+  <div class="col">
+    
+  </div>
+</div>
+    
+  </div>
+</div>
+</body>
+</html>
+<!-- Modals -->
+  <div class="modal fade" tabindex="-1" id="busyDialog" role="dialog">
+    <div class="modal-dialog modal-dialog-centered justify-content-center" role="document">
+        <span style="color: azure" class="fa fa-spinner fa-spin fa-3x"></span>
+    </div>
+</div>
+  <div class="modal fade pr-0" tabindex="-1" id="downloadDialog" role="dialog">
+    <div class="modal-dialog full modal-xl modal-dialog-centered justify-content-center" role="document">
+        <div class="modal-content full panel">
+            <div class="modal-header bg-dark">
+                <h4>Select the data to download!</h4>
+                 <div class="form-group mb-1">
+                  <div class="row">
+                    <div class="datepicker_download date col-sm-6 input-group p-0">
+                        <input type="text" placeholder="Choose a start date" class="form-control mr-3 py-4 px-4" id="startDate">
+                        <div class="input-group-append"></div>
+                    </div>
+                      <div class="datepicker_download col-sm-6 date input-group p-0">
+                        <input type="text" placeholder="Choose an end date" class="form-control mr-3 py-4 px-4" id="endDate">
+                        <div class="input-group-append"></div>
+                    </div>
+              </div>
+            </div>
+            </div>
+            <div class="modal-body row panel">
+              <div class="col-sm-2">
+                <span class="label"><h4>General<input class="ml-2" tooltip="Check All" type="checkbox" id="general_all" value="general_all"></h4></span>
+                 <form>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="general_check mr-2" name="column" value="DATE">Date</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="general_check mr-2" name="column" value="AGE">Age</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="general_check mr-2" name="column" value="GENDER">Gender</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="general_check mr-2" name="column" value="BLOODTYPE">Bloodtype</label>
+                  </div>
+                </form>
+              </div>
+              <div class="col-sm-3">
+                <span class="label"><h5>Activity<input class="ml-2" type="checkbox" id="activity_all" value="activity_all"></h5></span>
+                 <form>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="ACTIVE_ENERGY_BURNED">Active Calories Burned</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="BASAL_ENERGY_BURNED">Basal Calories Burned</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="APPLE_STAND_TIME">Stand Time</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="FLIGHTSCLIMBED">Flights Climbed</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="STEPS">Steps</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="acitivity_check mr-2" name="column" value="WALK_RUN">Walk Run</label>
+                  </div>
+                </form>
+              </div>
+              <div class="col-sm-2">
+                <span class="label"><h5>Macros<input class="ml-2" type="checkbox" id="macros_all" value="macros_all"></h5></span>
+                 <form>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="macros_check mr-2" name="column" value="PROTEINS">Proteins</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="macros_check mr-2" name="column" value="CARBS">Carbs</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="macros_check mr-2" name="column" value="FATTOTAL">Fat</label>
+                  </div>
+                <!--  <div class="checkbox">
+                    <label><input type="checkbox" class="macros_check mr-2" name="column" value="">Total</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="macros_check mr-2" name="column" value="">Total Burned</label>
+                  </div>-->
+                </form>
+              </div>
+              <div class="col-sm-2">
+                <span class="label"><h5>Minerals<input class="ml-2" type="checkbox" id="minerals_all" value="minerals_all"></h5></span>
+                 <form>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="minerals_check mr-2" name="column" value="SODIUM">Sodium</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="minerals_check mr-2" name="column" value="CHOLESTEROL">Cholesterol</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="minerals_check mr-2" name="column" value="SUGAR">Sugar</label>
+                  </div>
+                </form>
+              </div>
+              <div class="col-sm-3">
+                <span class="label"><h5>Fat Composition<input class="ml-2" type="checkbox" id="fat_all" value="fat_all"></h5></span>
+                 <form>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="fat_check mr-2" name="column" value="FATSAT">Saturated</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="fat_check mr-2" name="column" value="FATPOLY">Polyunsaturated</label>
+                  </div>
+                  <div class="checkbox">
+                    <label><input type="checkbox" class="fat_check mr-2" name="column" value="FATMONO">Monounsaturated</label>
+                  </div>
+                  <!--<div class="checkbox">
+                    <label><input type="checkbox" name="column" value="">Total Fat</label>
+                  </div>-->
+                </form>
+              </div>
+            </div>
+            <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="button" id="download_csv" class="btn btn-primary btn-ok">Download CSV</button>
+            </div>
+          </div>
+    </div>
+</div>
