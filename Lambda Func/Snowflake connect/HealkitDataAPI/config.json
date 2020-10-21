@@ -1,0 +1,13 @@
+{
+    "snowflake":{
+        "account":"YOUR ACCOUNT",
+        "username":"YOUR USER",
+        "password":"USER PW",
+        "warehouse":"WH TO RUN QUERIES",
+        "database":"YOUR DB NAME",
+        "role":"ROLE W/ ACCESS TO ABOVE"
+    }
+}
+
+
+
