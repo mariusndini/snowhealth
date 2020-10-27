@@ -1007,8 +1007,7 @@ rs = snowflake.execute( { sqlText:
       rs = snowflake.execute( { sqlText: 
       `DROP TABLE "SNOWHEALTH"."HK"."POP_AGG2";`} );
 //--------------------------------------------------------
-      rs = snowflake.execute( { sqlText: 
-      `GRANT SELECT ON ALL TABLES IN SCHEMA "SNOWHEALTH"."HK" TO ROLE HEALTHKITSERVICE;`} );
+      --rs = snowflake.execute( { sqlText: `GRANT SELECT ON ALL TABLES IN SCHEMA "SNOWHEALTH"."HK" TO ROLE HEALTHKITSERVICE;`} );
 //--------------------------------------------------------
       rs = snowflake.execute( { sqlText: `CREATE OR REPLACE STREAM SNOWHEALTH.HK.HEALTH_STREAM ON TABLE "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT";`} );
 
