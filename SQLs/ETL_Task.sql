@@ -1,16 +1,58 @@
   
-  CREATE or replace PROCEDURE SNOWHEALTH.HK.HEALTH_TABLES_SPROC()
+CREATE or replace PROCEDURE SNOWHEALTH.HK.HEALTH_TABLES_SPROC()
   RETURNS BOOLEAN
   LANGUAGE javascript
   EXECUTE AS OWNER
  AS
   $$
   
+  /*
   var load = snowflake.execute( { sqlText:
   `copy into SNOWHEALTH.PUBLIC.HEALTHKIT_IMPORT
     from @SNOWHEALTH.PUBLIC.SNOWHEALTHS3
     FILE_FORMAT = (TYPE = JSON);` })
-  
+  */
+
+  var load = snowflake.execute( { sqlText: `
+      create or replace TABLE POP_AGG (
+        ID VARCHAR(16777216),
+        DATE DATE,
+        AGE NUMBER(38,0),
+        BLOODTYPE VARCHAR(16777216),
+        GENDER VARCHAR(16777216),
+        ACTIVE_ENERGY_BURNED FLOAT,
+        APPLE_STAND_TIME FLOAT,
+        BASAL_ENERGY_BURNED FLOAT,
+        CARBS FLOAT,
+        CHOLESTEROL FLOAT,
+        DIETARY_ENERGY FLOAT,
+        FATMONO FLOAT,
+        FATPOLY FLOAT,
+        FATSAT FLOAT,
+        FATTOTAL FLOAT,
+        FLIGHTSCLIMBED FLOAT,
+        PROTEIN FLOAT,
+        SODIUM FLOAT,
+        STEPS FLOAT,
+        SUGAR FLOAT,
+        WALK_RUN FLOAT,
+        HEART_RATE_ARR ARRAY,
+        REST_HEART_RATE_ARR ARRAY,
+        SDNN_HEART_RATE_ARR ARRAY,
+        WALK_HEART_RATE_ARR ARRAY,
+        STAND_TIME_ARR ARRAY,
+        ENVIRONMENT_AUDIO_ARR ARRAY,
+        HEADPHONE_AUDIO_ARR ARRAY,
+        FLIGHTS_ARR ARRAY,
+        WALK_RUN_ARR ARRAY,
+        STEPS_ARR ARRAY,
+        ACTIVE_ENERGY_ARR ARRAY,
+        BASAL_ARR ARRAY,
+        RUN_DATE TIMESTAMP_LTZ(9)
+      );`})
+
+
+
   
   var rs = snowflake.execute( { sqlText: 
       `CREATE OR REPLACE TABLE HK.DATE_DIM (
@@ -960,9 +1002,7 @@ rs = snowflake.execute( { sqlText:
         order by 1 asc, 2 asc
       );`} );
 //--------------------------------------------------------
-      rs = snowflake.execute( { sqlText: 
-      `ALTER TABLE "SNOWHEALTH"."HK"."POP_AGG" SWAP WITH "SNOWHEALTH"."HK"."POP_AGG2";
-`} );
+      rs = snowflake.execute( { sqlText: `ALTER TABLE "SNOWHEALTH"."HK"."POP_AGG" SWAP WITH "SNOWHEALTH"."HK"."POP_AGG2";`} );
 //--------------------------------------------------------
       rs = snowflake.execute( { sqlText: 
       `DROP TABLE "SNOWHEALTH"."HK"."POP_AGG2";`} );
@@ -973,6 +1013,7 @@ rs = snowflake.execute( { sqlText:
       rs = snowflake.execute( { sqlText: `CREATE OR REPLACE STREAM SNOWHEALTH.HK.HEALTH_STREAM ON TABLE "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT";`} );
 
 //--------------------- ENABLE SHARE OF DATA TO EXCHANGE (share previously created) -----------------------------------
+/*
       rs = snowflake.execute( { sqlText: `GRANT USAGE ON DATABASE "SNOWHEALTH" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
       rs = snowflake.execute( { sqlText: `GRANT USAGE ON SCHEMA "SNOWHEALTH"."PUBLIC" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."ACTIVE_ENERGY_BURNED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
@@ -1005,6 +1046,6 @@ rs = snowflake.execute( { sqlText:
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."BASALENERGYBURNED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."APPLESTANDTIME" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."PUBLIC"."HEALTHKIT_IMPORT" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
-
+*/
       return 'Done';
   $$;
