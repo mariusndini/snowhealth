@@ -81,3 +81,6 @@ The data is saved in its original JSON format in Snowflake and through SQL is pr
 Once data is in Snowflake it can be consumed with any of the native connectors that Snowflake offers. 
 
 ![img](https://github.com/mariusndini/img/blob/master/HealthiOSBridge_2.png)
+
+## Monday, Dec 14, 2020 Updates
+Codebase previously hosted all code with in Snowflake Stored Procedure, this has been replaced by materialized views that the S.Proc uses to generate a denormalized data set to drive the front end.
