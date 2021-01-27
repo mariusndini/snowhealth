@@ -146,9 +146,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D2A5F1FF1F4A9144005CD714 /* SnowHealth */ = {
+		D2A5F1FF1F4A9144005CD714 /* MyDay */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D2A5F2121F4A9144005CD714 /* Build configuration list for PBXNativeTarget "SnowHealth" */;
+			buildConfigurationList = D2A5F2121F4A9144005CD714 /* Build configuration list for PBXNativeTarget "MyDay" */;
 			buildPhases = (
 				D2A5F1FC1F4A9144005CD714 /* Sources */,
 				D2A5F1FD1F4A9144005CD714 /* Frameworks */,
@@ -158,7 +158,7 @@
 			);
 			dependencies = (
 			);
-			name = SnowHealth;
+			name = MyDay;
 			productName = MyRWTutorial;
 			productReference = D2A5F2001F4A9144005CD714 /* Snow Health.app */;
 			productType = "com.apple.product-type.application";
@@ -184,7 +184,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D2A5F1FB1F4A9143005CD714 /* Build configuration list for PBXProject "SnowHealth" */;
+			buildConfigurationList = D2A5F1FB1F4A9143005CD714 /* Build configuration list for PBXProject "MyDay" */;
 			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -197,7 +197,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D2A5F1FF1F4A9144005CD714 /* SnowHealth */,
+				D2A5F1FF1F4A9144005CD714 /* MyDay */,
 			);
 		};
 /* End PBXProject section */
@@ -373,7 +373,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 9.1;
+				MARKETING_VERSION = 10.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -396,7 +396,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 9.1;
+				MARKETING_VERSION = 10.1;
 				PRODUCT_BUNDLE_IDENTIFIER = project.marius.snowhealth;
 				PRODUCT_NAME = "Snow Health";
 				SWIFT_VERSION = 5.0;
@@ -407,7 +407,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D2A5F1FB1F4A9143005CD714 /* Build configuration list for PBXProject "SnowHealth" */ = {
+		D2A5F1FB1F4A9143005CD714 /* Build configuration list for PBXProject "MyDay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D2A5F2101F4A9144005CD714 /* Debug */,
@@ -416,7 +416,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D2A5F2121F4A9144005CD714 /* Build configuration list for PBXNativeTarget "SnowHealth" */ = {
+		D2A5F2121F4A9144005CD714 /* Build configuration list for PBXNativeTarget "MyDay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D2A5F2131F4A9144005CD714 /* Debug */,

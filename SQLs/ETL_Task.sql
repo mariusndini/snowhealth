@@ -251,5 +251,17 @@ CREATE or replace PROCEDURE SNOWHEALTH.HK.HEALTH_TABLES_SPROC()
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."BASALENERGYBURNED" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
       rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."APPLESTANDTIME" TO SHARE "SNOWHEALTH_EXCHANGE";`} );
 
+      //ADD DATA TO CITIBIKE SHARE
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."DATED_POP" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."DATE_DIM" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HOUR_DIM" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."HOURS_POP" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."POPULATION" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE "SNOWHEALTH"."HK"."POP_AGG" TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      rs = snowflake.execute( { sqlText: `GRANT SELECT ON TABLE SNOWHEALTH.HK.TRIGGER_UPDATE TO SHARE "CITIBIKE_SFC_SHARE";`} );
+      
+      rs = snowflake.execute( { sqlText: `insert into SNOWHEALTH.HK.TRIGGER_UPDATE (SELECT CURRENT_TIMESTAMP());`} );
+      rs = snowflake.execute( { sqlText: `alter table SNOWHEALTH.HK.TRIGGER_UPDATE set change_tracking = true;`} );
+
       return 'Done';
   $$;
