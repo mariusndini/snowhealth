@@ -1,7 +1,7 @@
 CREATE OR REPLACE SECURE MATERIALIZED VIEW SNOWHEALTH.HK.BASALENERGYBURNED 
 CLUSTER BY (ID, STARTTIME)
 as
-select
+select distinct
     RECORD:identifier::STRING as ID,
 
     replace(split(value, ' ')[ARRAY_SIZE(split(value, ' '))-7] ||' '||

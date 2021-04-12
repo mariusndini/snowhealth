@@ -1,7 +1,7 @@
 CREATE OR REPLACE SECURE MATERIALIZED VIEW SNOWHEALTH.HK.FATPOLY 
 CLUSTER BY (ID, STARTTIME)
 as
-  select
+  select distinct
     RECORD:identifier::STRING as ID,
     split(value, ' ')[0]::DOUBLE as value,
     split(value, ' ')[1]::STRING AS UNIT,

@@ -14,5 +14,3 @@ CREATE OR REPLACE TABLE HK.POPULATION AS(
     group by 1) U ON ID = U.ID AND RECORD:loaddate = U.LOADTIME 
   group by 1, 2, 3, 4, 5
 );
-
-select * from POPULATION;
