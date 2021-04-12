@@ -160,51 +160,51 @@ CREATE or replace PROCEDURE SNOWHEALTH.HK.HEALTH_TABLES_SPROC()
               LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."SUGAR" group by 1,2,4) SUG ON DP.ID = SUG.ID AND DP.DATE = SUG.DATE
               LEFT JOIN (SELECT ID, DATE_TRUNC('DAY', STARTTIME) AS DATE, sum(VALUE) as VALUE, UNIT FROM "SNOWHEALTH"."HK"."WALKRUNDISTANCE" group by 1,2,4) WRD ON DP.ID = WRD.ID AND DP.DATE = WRD.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::STRING||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, IFF((VALUE is not null), value::STRING,'') as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, IFF((VALUE is not null), value::STRING,'') as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."HEARTRATE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                           ) group by ID, date_trunc('day',STARTTIME)) HRTRT ON HRTRT.ID=DP.ID AND HRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."RESTINGHEARTRATE")
+                          from (select ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."RESTINGHEARTRATE")
                           group by ID, date_trunc('day',STARTTIME) ) RHRTRT ON RHRTRT.ID=DP.ID AND RHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEARTRATESDNN")
+                          from (select ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEARTRATESDNN")
                           group by ID, date_trunc('day',STARTTIME) ) SDNNHRTRT ON SDNNHRTRT.ID=DP.ID AND SDNNHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."WALKINGHEARTAVG")
+                          from (select ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."WALKINGHEARTAVG")
                           group by ID, date_trunc('day',STARTTIME) ) WHRTRT ON WHRTRT.ID=DP.ID AND WHRTRT.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."APPLESTANDTIME" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME)) TAST ON TAST.ID=DP.ID AND TAST.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."ENVIRONMENTAUDIO")
+                          from (select ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."ENVIRONMENTAUDIO")
                           group by ID, date_trunc('day',STARTTIME) ) ENAUDIO ON ENAUDIO.ID=DP.ID AND ENAUDIO.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEAPHONEAUDIO")
+                          from (select ID, STARTTIME, VALUE from "SNOWHEALTH"."HK"."HEAPHONEAUDIO")
                           group by ID, date_trunc('day',STARTTIME) ) HPAUDIO ON HPAUDIO.ID=DP.ID AND HPAUDIO.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."FLIGHTSCLIMBED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) FCDETAIL ON FCDETAIL.ID=DP.ID AND FCDETAIL.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."WALKRUNDISTANCE" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) WRDIST ON WRDIST.ID=DP.ID AND WRDIST.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."STEPCOUNT" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME)) STEPSDET ON STEPSDET.ID=DP.ID AND STEPSDET.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."ACTIVE_ENERGY_BURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) AEBDET ON AEBDET.ID=DP.ID AND AEBDET.DATE = DP.DATE
               LEFT JOIN (select ID, date_trunc('day',STARTTIME) AS DATE, ARRAY_AGG(PARSE_JSON('{"DATE":"'||STARTTIME::TIMESTAMP ||'", "val":"'|| VALUE::DOUBLE||'"}')) within group (order by starttime::TIMESTAMP ASC) AS DATA
-                          from (select distinct B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
+                          from (select B.ID AS ID, B.DATE AS STARTTIME, NVL(SUM(VALUE),0) as VALUE
                                 FROM "SNOWHEALTH"."HK"."HOURS_POP" B LEFT OUTER JOIN  "SNOWHEALTH"."HK"."BASALENERGYBURNED" A ON A.ID = B.ID AND DATE_TRUNC('HOUR',A.STARTTIME) = B.DATE
                                 GROUP BY 1, 2 
                           ) group by ID, date_trunc('day',STARTTIME) ) BASALDET ON BASALDET.ID=DP.ID AND BASALDET.DATE = DP.DATE
